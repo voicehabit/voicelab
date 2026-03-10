@@ -1,422 +1,195 @@
-
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>목소리 훈련 앱</title>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Voice Habit</title>
 
 <style>
-
 body{
-font-family:Arial;
+font-family: Arial, sans-serif;
+background:#f7f7f7;
 margin:0;
-background:#f4f6fb;
+display:flex;
+justify-content:center;
 }
 
-header{
-background:#4A6CF7;
+.app{
+width:380px;
+max-width:100%;
+background:white;
+min-height:100vh;
+}
+
+.header{
+background:#58cc02;
 color:white;
-text-align:center;
 padding:20px;
+font-size:22px;
+font-weight:bold;
+text-align:center;
 }
 
-.container{
-max-width:700px;
-margin:auto;
-padding:20px;
+.streak{
+text-align:center;
+padding:10px;
+font-size:18px;
+}
+
+.progress{
+height:10px;
+background:#eee;
+margin:10px 20px;
+border-radius:20px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:10px;
+background:#58cc02;
+width:0%;
 }
 
 .card{
 background:white;
+margin:20px;
 padding:20px;
-margin-bottom:15px;
-border-radius:12px;
-box-shadow:0 4px 10px rgba(0,0,0,0.08);
+border-radius:20px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+text-align:center;
 }
 
-button{
-padding:12px 16px;
-border:none;
-background:#4A6CF7;
-color:white;
-border-radius:8px;
-cursor:pointer;
+.exercise-title{
+font-size:20px;
+margin-bottom:10px;
 }
 
 .timer{
-font-size:34px;
-color:#4A6CF7;
-font-weight:bold;
+font-size:40px;
+margin:15px;
 }
 
-.hidden{
-display:none;
+.button{
+background:#58cc02;
+color:white;
+border:none;
+padding:15px;
+width:100%;
+border-radius:15px;
+font-size:18px;
+cursor:pointer;
 }
 
-.badge{
-background:#e7ebff;
-padding:8px;
-border-radius:6px;
-margin:4px;
-display:inline-block;
+.button:active{
+transform:scale(0.97);
 }
 
-.progress{
+.done{
 background:#ddd;
-height:10px;
-border-radius:10px;
-overflow:hidden;
-}
-
-.bar{
-background:#4A6CF7;
-height:10px;
-width:10%;
-}
-
-.calendar{
-display:grid;
-grid-template-columns:repeat(7,1fr);
-gap:5px;
-}
-
-.day{
-background:#eef1ff;
-padding:10px;
-text-align:center;
-border-radius:6px;
-font-size:12px;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<header>
-<h2>하루 5분 목소리 훈련</h2>
-<p>목소리를 훈련하면 자신감이 달라집니다</p>
-</header>
+<div class="app">
 
-<div class="container">
-
-<!-- 온보딩 -->
-
-<div class="card" id="onboarding">
-
-<h3>목소리 훈련 앱</h3>
-
-<p>플랭크 · 허밍 · 발성 훈련</p>
-<p>하루 5분 투자로 목소리를 개선하세요.</p>
-
-<button onclick="show('diagnosis')">30초 목소리 테스트</button>
-
+<div class="header">
+🎤 Voice Habit
 </div>
 
-<!-- 목소리 진단 -->
-
-<div class="card hidden" id="diagnosis">
-
-<h3>30초 목소리 진단</h3>
-
-<p>아래 문장을 읽어주세요</p>
-
-<p>"안녕하세요. 오늘도 제 목소리를 훈련합니다."</p>
-
-<div class="timer" id="diagnosisTimer">30</div>
-
-<button onclick="startDiagnosis()">녹음 시작</button>
-
+<div class="streak">
+🔥 Streak: <span id="streak">0</span> days
 </div>
-
-<!-- 점수 -->
-
-<div class="card hidden" id="score">
-
-<h3>목소리 점수</h3>
-
-<div class="timer" id="voiceScore">0</div>
-
-<p id="voiceAnalysis"></p>
-
-<button onclick="showHome()">훈련 시작</button>
-
-</div>
-
-<!-- 홈 -->
-
-<div class="card hidden" id="home">
-
-<h3>오늘의 훈련</h3>
-
-<p>플랭크 30초</p>
-<p>허밍 1분</p>
-<p>소리내서 읽기 2분</p>
-<p>호흡 훈련 1분</p>
-
-<button onclick="startTraining()">훈련 시작</button>
-
-<h4>레벨</h4>
-
-<p id="levelText">Level 1</p>
-
-<h4>XP</h4>
 
 <div class="progress">
-<div class="bar" id="xpBar"></div>
+<div class="progress-bar" id="progressBar"></div>
 </div>
 
-<p id="streak">연속 훈련 1일</p>
 
+<div class="card">
+
+<div class="exercise-title">
+플랭크 + 호흡
 </div>
 
-<!-- 훈련 -->
-
-<div class="card hidden" id="training">
-
-<h3 id="exerciseName"></h3>
-
-<div class="timer" id="exerciseTimer">30</div>
-
-<button onclick="nextExercise()">다음</button>
-
+<div class="timer" id="timer">
+60
 </div>
 
-<!-- 녹음 -->
-
-<div class="card hidden" id="record">
-
-<h3>훈련 전후 목소리 비교</h3>
-
-<button onclick="recordBefore()">훈련 전 녹음</button>
-
-<button onclick="recordAfter()">훈련 후 녹음</button>
-
-<button onclick="playVoice()">재생</button>
+<button class="button" onclick="startTimer()">
+시작
+</button>
 
 </div>
 
-<!-- 완료 -->
 
-<div class="card hidden" id="complete">
+<div class="card">
 
-<h3>훈련 완료 🎉</h3>
-
-<p>XP +20</p>
-
-<button onclick="showCoach()">AI 분석</button>
-
+<div class="exercise-title">
+발성 연습 "음~"
 </div>
 
-<!-- AI 코치 -->
+<p>
+입을 다물고 코로 숨 쉬며  
+30초 동안 "음" 소리
+</p>
 
-<div class="card hidden" id="coach">
-
-<h3>AI 목소리 코치</h3>
-
-<p id="coachText"></p>
-
-</div>
-
-<!-- 그래프 -->
-
-<div class="card hidden" id="progress">
-
-<h3>목소리 성장 그래프</h3>
-
-<canvas id="chart"></canvas>
-
-</div>
-
-<!-- 캘린더 -->
-
-<div class="card hidden" id="calendar">
-
-<h3>30일 훈련 캘린더</h3>
-
-<div class="calendar" id="calendarGrid"></div>
-
-</div>
-
-<!-- 업적 -->
-
-<div class="card hidden" id="achievements">
-
-<h3>업적</h3>
-
-<div class="badge">첫 훈련</div>
-<div class="badge">3일 연속</div>
-<div class="badge">7일 연속</div>
-<div class="badge">30일 완주</div>
+<button class="button" onclick="completeExercise()">
+완료
+</button>
 
 </div>
 
 </div>
+
 
 <script>
 
-function show(id){
+let time=60
+let timerInterval
+let progress=0
+let streak=localStorage.getItem("streak") || 0
 
-document.querySelectorAll(".card").forEach(c=>c.classList.add("hidden"))
+document.getElementById("streak").innerText=streak
 
-document.getElementById(id).classList.remove("hidden")
+function startTimer(){
 
-}
-
-function startDiagnosis(){
-
-let time=30
-
-let timer=setInterval(()=>{
+timerInterval=setInterval(()=>{
 
 time--
-
-document.getElementById("diagnosisTimer").innerText=time
+document.getElementById("timer").innerText=time
 
 if(time<=0){
-
-clearInterval(timer)
-
-let score=Math.floor(Math.random()*30)+60
-
-document.getElementById("voiceScore").innerText=score
-
-document.getElementById("voiceAnalysis").innerText=
-
-"호흡 안정 · 공명 보통 · 발성 안정"
-
-show("score")
-
+clearInterval(timerInterval)
+completeExercise()
 }
 
 },1000)
 
 }
 
-function showHome(){
 
-show("home")
+function completeExercise(){
 
-}
+progress+=50
 
-let exercises=[
-{name:"플랭크",time:30},
-{name:"허밍",time:60},
-{name:"소리내서 읽기",time:120},
-{name:"호흡 훈련",time:60}
-]
+document.getElementById("progressBar").style.width=progress+"%"
 
-let index=0
-let timeLeft
+if(progress>=100){
 
-function startTraining(){
+streak++
+localStorage.setItem("streak",streak)
 
-index=0
-show("training")
-startExercise()
+alert("오늘 훈련 완료!")
 
-}
-
-function startExercise(){
-
-let ex=exercises[index]
-
-document.getElementById("exerciseName").innerText=ex.name
-
-timeLeft=ex.time
-
-let timer=setInterval(()=>{
-
-timeLeft--
-
-document.getElementById("exerciseTimer").innerText=timeLeft
-
-if(timeLeft<=0){
-
-clearInterval(timer)
-
-}
-
-},1000)
-
-}
-
-function nextExercise(){
-
-index++
-
-if(index>=exercises.length){
-
-show("record")
-
-return
-
-}
-
-startExercise()
-
-}
-
-function showCoach(){
-
-show("coach")
-
-document.getElementById("coachText").innerText=
-
-"호흡 지지력이 좋아졌습니다. 허밍을 더 길게 연습하면 공명이 좋아집니다."
-
-showGraph()
-
-}
-
-function showGraph(){
-
-show("progress")
-
-const ctx=document.getElementById("chart")
-
-new Chart(ctx,{
-
-type:"line",
-
-data:{
-labels:["Day1","Day7","Day14","Day30"],
-datasets:[{
-label:"목소리 점수",
-data:[60,70,78,85],
-borderColor:"#4A6CF7"
-}]
-}
-
-})
-
-}
-
-function generateCalendar(){
-
-let grid=document.getElementById("calendarGrid")
-
-for(let i=1;i<=30;i++){
-
-let d=document.createElement("div")
-
-d.className="day"
-
-d.innerText="Day "+i
-
-grid.appendChild(d)
+location.reload()
 
 }
 
 }
-
-generateCalendar()
 
 </script>
 
