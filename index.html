@@ -18,6 +18,10 @@ background:#f2f2f2;
 display:none;
 }
 
+.page.active{
+display:block;
+}
+
 .app{
 max-width:420px;
 margin:auto;
@@ -26,7 +30,7 @@ min-height:100vh;
 padding-bottom:80px;
 }
 
-/* 상단 영역 */
+/* header */
 
 .header{
 background:linear-gradient(180deg,#0e7c74,#1f3f9c);
@@ -39,23 +43,13 @@ margin:0;
 font-size:26px;
 }
 
-/* 오늘의 복습 카드 */
+/* review card */
 
 .review-card{
 background:rgba(255,255,255,0.15);
 border-radius:20px;
 padding:20px;
 margin-top:20px;
-}
-
-.review-title{
-font-size:22px;
-font-weight:bold;
-}
-
-.review-desc{
-margin-top:10px;
-opacity:0.9;
 }
 
 .start-btn{
@@ -67,21 +61,14 @@ padding:14px 20px;
 border-radius:14px;
 font-weight:bold;
 font-size:16px;
-box-shadow:0 5px rgba(0,0,0,0.1);
 cursor:pointer;
 }
 
-/* 섹션 */
+/* section */
 
 .section{
 padding:20px;
 }
-
-.section h2{
-margin-bottom:15px;
-}
-
-/* 카드 */
 
 .card{
 background:#f5f5f5;
@@ -91,66 +78,46 @@ margin-bottom:15px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-box-shadow:0 3px rgba(0,0,0,0.05);
 cursor:pointer;
 }
 
-.icon{
-font-size:28px;
-}
+/* quest */
 
-.button{
-margin-top:20px;
-background:#ff8c00;
+.quest-header{
+background:#f57c00;
 color:white;
-border:none;
-padding:15px;
-width:100%;
-border-radius:12px;
-font-size:18px;
-cursor:pointer;
+padding:25px;
 }
 
 .progress{
-height:15px;
 background:#ddd;
+height:16px;
 border-radius:20px;
-margin-top:10px;
 overflow:hidden;
 }
 
 .bar{
-height:15px;
-background:#ff8c00;
-width:0%;
+background:#ff9800;
+height:16px;
+width:10%;
 }
 
+/* pronunciation */
 
-/* 훈련 화면 */
-
-.training{
-text-align:center;
-padding:30px;
+.line{
+padding:6px;
+font-size:18px;
 }
 
-.timer{
-font-size:50px;
-margin:20px;
+.activeLine{
+background:#b3e5fc;
 }
 
-/* 컬렉션 카드 */
-
-.collection-card{
-background:white;
-border-radius:20px;
-padding:20px;
-box-shadow:0 3px rgba(0,0,0,0.08);
-display:flex;
-justify-content:space-between;
-align-items:center;
+.error{
+background:#ffcdd2;
 }
 
-/* 하단 네비 */
+/* navbar */
 
 .navbar{
 position:fixed;
@@ -167,7 +134,6 @@ margin:auto;
 }
 
 .nav-item{
-text-align:center;
 font-size:22px;
 cursor:pointer;
 }
@@ -177,138 +143,206 @@ cursor:pointer;
 
 <body>
 
-<!-- 홈 화면 -->
-<div id="homePage" class="page" style="display:block;">
-    <div class="app">
-        <div class="header">
-            <h1>오늘의 복습</h1>
-            <div class="review-card">
-                <div class="review-title">발성 훈련</div>
-                <div class="review-desc">매일 훈련으로 발성 점수를 높여보세요.</div>
-                <button class="start-btn" onclick="showPage('trainingPage')">
-                    시작 +XP
-                </button>
-            </div>
-        </div>
-        <div class="section">
-            <h2>내 컬렉션</h2>
-            <div class="collection-card">
-                <div>
-                    <div style="font-weight:bold;">연습할 틀린 문제 <span id="mistakes">0</span>개</div>
-                    <div style="font-size:14px;color:gray;">
-                        훈련 데이터를 기반으로 생성됩니다.
-                    </div>
-                </div>
-                <div style="font-size:28px;">🔁</div>
-            </div>
-        </div>
-    </div>
+<!-- HOME -->
+
+<div id="home" class="page active">
+
+<div class="app">
+
+<div class="header">
+
+<h1>오늘의 복습</h1>
+
+<div class="review-card">
+
+<div style="font-size:22px;font-weight:bold;">
+귀와 발성 연결 훈련
 </div>
 
-<!-- 발성 훈련 페이지 -->
-<div id="trainingPage" class="page" style="display:none;">
-    <div class="training">
-        <h2>발성 훈련</h2>
-        <p>"아~~~" 소리를 5초 동안 유지하세요</p>
-        <div id="trainTimer" class="timer">5</div>
-        <button class="button" onclick="startVoiceTraining()">녹음 시작</button>
-    </div>
+<div style="margin-top:10px;">
+소리를 듣고 몸과 발성을 동시에 훈련합니다
 </div>
 
-<!-- 퀘스트 페이지 -->
-<div id="questPage" class="page" style="display:none;">
-    <div class="app">
-        <div class="header">
-            <h1>3월의 발성 퀘스트</h1>
-            <div class="review-card">
-                <div style="font-size:20px;font-weight:bold;">
-                    발성 점수 200점 달성하기
-                </div>
-                <div class="progress">
-                    <div id="questBar" class="bar"></div>
-                </div>
-                <div id="questText" style="margin-top:5px;">
-                    104 / 200
-                </div>
-            </div>
-        </div>
-        <div class="section">
-            <button class="button" onclick="goHome()">홈으로 돌아가기</button>
-        </div>
-    </div>
+<button class="start-btn" onclick="openQuest()">
+시작 +20 XP
+</button>
+
 </div>
 
+</div>
+
+
+<div class="section">
+
+<h2>훈련</h2>
+
+<div class="card" onclick="startBodyTraining()">
+<div>몸훈련</div>
+<div>🏋️</div>
+</div>
+
+<div class="card" onclick="startBreathTraining()">
+<div>호흡훈련</div>
+<div>🌬</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- BODY TRAINING -->
+
+<div id="body" class="page">
+
+<div class="section">
+
+<h2>스쿼트 발음훈련</h2>
+
+<div id="lines">
+
+<div class="line">pa ta ka pa ta ka</div>
+<div class="line">ma na la ma na la</div>
+<div class="line">pa pa ta ta ka ka</div>
+<div class="line">ba da ga ba da ga</div>
+<div class="line">sa sha sa sha</div>
+<div class="line">ra la ra la</div>
+<div class="line">pa ka pa ka pa ka</div>
+<div class="line">ma ma ma na na na</div>
+<div class="line">la la la ra ra ra</div>
+<div class="line">pa ta ka pa ta ka</div>
+
+</div>
+
+<h3 id="timer">60</h3>
+
+<button onclick="startPronunciation()">훈련 시작</button>
+
+</div>
+
+</div>
+
+<!-- BREATH -->
+
+<div id="breath" class="page">
+
+<div class="section">
+
+<h2>호흡훈련</h2>
+
+<div id="breathStep">
+
+1. 허밍
+
+</div>
+
+<button onclick="nextBreath()">다음</button>
+
+</div>
+
+</div>
+
+<!-- QUEST -->
+
+<div id="quest" class="page">
+
+<div class="quest-header">
+
+<h1>3월 발성 퀘스트</h1>
+
+<div class="progress">
+<div class="bar" id="questBar"></div>
+</div>
+
+<div id="questScore">0 / 50</div>
+
+</div>
+
+<div class="section">
+
+<div class="card" onclick="startRecording()">
+음성 녹음하기
+</div>
+
+<div class="card" onclick="playRecording()">
+음성 저장고
+</div>
+
+</div>
+
+</div>
+
+<!-- NAV -->
 
 <div class="navbar">
-    <div class="nav-item" onclick="goHome()">🏠</div>
-    <div class="nav-item" onclick="openQuest()">🎒</div>
-    <div class="nav-item">🌳</div>
-    <div class="nav-item">❤️</div>
-    <div class="nav-item">🏋️</div>
-    <div class="nav-item">⋯</div>
+
+<div class="nav-item" onclick="showPage('home')">🏠</div>
+<div class="nav-item" onclick="openQuest()">🎒</div>
+<div class="nav-item" onclick="startBodyTraining()">🏋️</div>
+<div class="nav-item" onclick="startBreathTraining()">🌬</div>
+<div class="nav-item">⋯</div>
+
 </div>
+
 
 <script>
 
 let xp = localStorage.getItem("xp") || 0
-let questScore = localStorage.getItem("questScore") || 104
-
-xp = parseInt(xp)
-questScore = parseInt(questScore)
-
-updateQuest()
+let level = localStorage.getItem("level") || 1
 
 function showPage(id){
 
 document.querySelectorAll(".page").forEach(p=>{
-p.style.display="none"
+p.classList.remove("active")
 })
 
-document.getElementById(id).style.display="block"
+document.getElementById(id).classList.add("active")
 
 }
-
-/* 빨간 가방 클릭 */
 
 function openQuest(){
-showPage("questPage")
+showPage("quest")
 }
 
-/* 홈으로 */
+/* BODY TRAINING */
 
-function goHome(){
-showPage("homePage")
+function startBodyTraining(){
+showPage("body")
 }
 
-/* 훈련 시작 */
+function startPronunciation(){
 
-function startVoiceTraining(){
+let lines = document.querySelectorAll(".line")
+let index=0
 
-let time = 5
-document.getElementById("trainTimer").innerText=time;
+let timer=60
 
-let timer = setInterval(()=>{
+let interval=setInterval(()=>{
 
-time--
-document.getElementById("trainTimer").innerText=time
+document.getElementById("timer").innerText=timer
 
-if(time==0){
+lines.forEach(l=>l.classList.remove("activeLine"))
 
-clearInterval(timer)
+if(lines[index]){
+lines[index].classList.add("activeLine")
+}
 
-let score = Math.floor(Math.random()*20)+10
+index++
 
-xp += score
-questScore += score
+timer--
+
+if(timer<=0){
+
+clearInterval(interval)
+
+xp+=10
 
 localStorage.setItem("xp",xp)
-localStorage.setItem("questScore",questScore)
 
-alert("훈련 완료! +" + score + " XP")
+alert("훈련완료 +10XP")
 
-updateQuest()
-
-goHome()
+showPage("quest")
 
 }
 
@@ -316,18 +350,95 @@ goHome()
 
 }
 
-/* 퀘스트 진행 업데이트 */
+/* BREATH */
+
+let breathStep=0
+
+let breathList=[
+"1. 허밍",
+"2. 스~~~~",
+"3. 하품 호흡",
+"4. 한숨 호흡"
+]
+
+function startBreathTraining(){
+
+showPage("breath")
+
+breathStep=0
+
+document.getElementById("breathStep").innerText=breathList[0]
+
+}
+
+function nextBreath(){
+
+breathStep++
+
+if(breathStep>=breathList.length){
+
+xp+=10
+
+localStorage.setItem("xp",xp)
+
+alert("호흡훈련 완료 +10XP")
+
+showPage("quest")
+
+return
+}
+
+document.getElementById("breathStep").innerText=breathList[breathStep]
+
+}
+
+/* RECORD */
+
+let recorder
+let audioBlob
+
+async function startRecording(){
+
+let stream = await navigator.mediaDevices.getUserMedia({audio:true})
+
+recorder = new MediaRecorder(stream)
+
+recorder.start()
+
+recorder.ondataavailable = e=>{
+audioBlob=e.data
+}
+
+setTimeout(()=>{
+recorder.stop()
+alert("녹음 완료")
+},3000)
+
+}
+
+function playRecording(){
+
+if(!audioBlob) return alert("녹음 없음")
+
+let audio = new Audio(URL.createObjectURL(audioBlob))
+
+audio.play()
+
+}
+
+/* QUEST */
 
 function updateQuest(){
 
-let percent = (questScore/200)*100
+let percent=(xp/50)*100
 
-document.getElementById("questBar").style.width = percent + "%"
+document.getElementById("questBar").style.width=percent+"%"
 
-document.getElementById("questText").innerText =
-questScore + " / 200"
+document.getElementById("questScore").innerText=xp+" / 50"
 
 }
+
+setInterval(updateQuest,500)
 
 </script>
 
