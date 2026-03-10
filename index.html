@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Voice Habit</title>
 
 <style>
@@ -15,55 +16,136 @@ background:#f2f2f2;
 
 .page{
 display:none;
-max-width:420px;
-margin:auto;
-min-height:100vh;
-background:white;
-padding:20px;
 }
 
-.active{
+.page.active{
 display:block;
 }
 
-.header{
-background:#ff8c00;
-color:white;
-padding:20px;
-border-radius:20px;
+.app{
+max-width:420px;
+margin:auto;
+background:white;
+min-height:100vh;
+padding-bottom:80px;
 }
 
-.button{
-margin-top:20px;
-background:#ff8c00;
+/* 상단 영역 */
+
+.header{
+background:linear-gradient(180deg,#0e7c74,#1f3f9c);
 color:white;
+padding:25px;
+}
+
+.header h1{
+margin:0;
+font-size:26px;
+}
+
+/* 오늘의 복습 카드 */
+
+.review-card{
+background:rgba(255,255,255,0.15);
+border-radius:20px;
+padding:20px;
+margin-top:20px;
+}
+
+.review-title{
+font-size:22px;
+font-weight:bold;
+}
+
+.review-desc{
+margin-top:10px;
+opacity:0.9;
+}
+
+.start-btn{
+margin-top:20px;
+background:white;
+color:#4a40e0;
 border:none;
-padding:15px;
-width:100%;
-border-radius:12px;
-font-size:18px;
+padding:14px 20px;
+border-radius:14px;
+font-weight:bold;
+font-size:16px;
+box-shadow:0 5px rgba(0,0,0,0.1);
 cursor:pointer;
 }
 
-.progress{
-height:15px;
-background:#ddd;
-border-radius:20px;
-margin-top:10px;
-overflow:hidden;
+/* 섹션 */
+
+.section{
+padding:20px;
 }
 
-.bar{
-height:15px;
-background:#ff8c00;
-width:0%;
+.section h2{
+margin-bottom:15px;
 }
+
+/* 카드 */
 
 .card{
 background:#f5f5f5;
-padding:15px;
-border-radius:15px;
-margin-top:15px;
+border-radius:18px;
+padding:20px;
+margin-bottom:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+box-shadow:0 3px rgba(0,0,0,0.05);
+cursor:pointer;
+}
+
+.icon{
+font-size:28px;
+}
+
+/* 훈련 화면 */
+
+.training{
+text-align:center;
+padding:30px;
+}
+
+.timer{
+font-size:50px;
+margin:20px;
+}
+
+/* 컬렉션 카드 */
+
+.collection-card{
+background:white;
+border-radius:20px;
+padding:20px;
+box-shadow:0 3px rgba(0,0,0,0.08);
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* 하단 네비 */
+
+.navbar{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+border-top:1px solid #eee;
+display:flex;
+justify-content:space-around;
+padding:10px 0;
+max-width:420px;
+margin:auto;
+}
+
+.nav-item{
+text-align:center;
+font-size:22px;
 }
 
 </style>
@@ -75,65 +157,118 @@ margin-top:15px;
 
 <div id="home" class="page active">
 
+<div class="app">
+
 <div class="header">
-<h2>오늘의 발성 훈련</h2>
-XP: <span id="xp">0</span>
+
+<h1>오늘의 복습</h1>
+
+<div class="review-card">
+
+<div class="review-title">
+듣기 집중 복습
 </div>
 
-<div class="card">
-<h3>50 XP 획득하기</h3>
-
-<div class="progress">
-<div id="xpBar" class="bar"></div>
+<div class="review-desc">
+집중 듣기 연습으로 귀를 훈련하세요.
 </div>
 
-<span id="xpText">0 / 50</span>
-
-</div>
-
-<button class="button" onclick="startTraining()">
-훈련 시작
+<button class="start-btn" onclick="startListening()">
+시작 +20 XP
 </button>
 
 </div>
 
+</div>
 
 
-<!-- 훈련 페이지 -->
+<div class="section">
 
-<div id="training" class="page">
+<h2>회화</h2>
 
-<h2>발성 훈련</h2>
+<div class="card" onclick="goSpeaking()">
+<div>말하기</div>
+<div class="icon">🎤</div>
+</div>
 
-<p>
-"아~~~~" 소리를 5초 동안 발성하세요
-</p>
-
-<h1 id="timer">5</h1>
-
-<button class="button" onclick="startVoice()">
-녹음 시작
-</button>
+<div class="card" onclick="startListening()">
+<div>듣기</div>
+<div class="icon">🔊</div>
+</div>
 
 </div>
 
 
+<div class="section">
 
-<!-- 결과 페이지 -->
+<h2>내 컬렉션</h2>
 
-<div id="result" class="page">
+<div class="collection-card">
 
-<h2>훈련 완료</h2>
+<div>
+<div style="font-weight:bold;">연습할 틀린 문제 <span id="mistakes">0</span>개</div>
+<div style="font-size:14px;color:gray;">
+훈련 데이터를 기반으로 생성됩니다.
+</div>
+</div>
 
-<p>
-발성 점수
-</p>
+<div style="font-size:28px;">🔁</div>
 
-<h1 id="score">0</h1>
+</div>
 
-<button class="button" onclick="finishTraining()">
-홈으로
-</button>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- 말하기 훈련 페이지 -->
+
+<div id="speaking" class="page">
+
+<div class="training">
+
+<h2>말하기 훈련</h2>
+
+<p>"아~~~" 소리를 유지하세요</p>
+
+<div id="timerSpeak" class="timer">5</div>
+
+<button onclick="startSpeaking()">훈련 시작</button>
+
+</div>
+
+</div>
+
+
+<!-- 듣기 훈련 페이지 -->
+
+<div id="listening" class="page">
+
+<div class="training">
+
+<h2>듣기 훈련</h2>
+
+<p>소리를 집중해서 들어보세요</p>
+
+<div id="timerListen" class="timer">5</div>
+
+<button onclick="runListening()">훈련 시작</button>
+
+</div>
+
+</div>
+
+
+<div class="navbar">
+
+<div class="nav-item" onclick="showPage('home')">🏠</div>
+<div class="nav-item">🎒</div>
+<div class="nav-item">🌳</div>
+<div class="nav-item">❤️</div>
+<div class="nav-item">🏋️</div>
+<div class="nav-item">⋯</div>
 
 </div>
 
@@ -141,9 +276,10 @@ XP: <span id="xp">0</span>
 <script>
 
 let xp = localStorage.getItem("xp") || 0
-xp = parseInt(xp)
+let mistakes = localStorage.getItem("mistakes") || 0
 
-updateXP()
+document.getElementById("mistakes").innerText = mistakes
+
 
 function showPage(id){
 
@@ -155,30 +291,32 @@ document.getElementById(id).classList.add("active")
 
 }
 
-function startTraining(){
-
-showPage("training")
-
+function goSpeaking(){
+showPage("speaking")
 }
 
-function startVoice(){
+function startListening(){
+showPage("listening")
+}
+
+function startSpeaking(){
 
 let time = 5
 
-let interval = setInterval(()=>{
+let timer = setInterval(()=>{
 
 time--
-document.getElementById("timer").innerText = time
+document.getElementById("timerSpeak").innerText = time
 
 if(time==0){
 
-clearInterval(interval)
+clearInterval(timer)
 
-let score = Math.floor(Math.random()*40)+60
+gainXP(10)
 
-document.getElementById("score").innerText = score
+alert("말하기 훈련 완료! +10 XP")
 
-showPage("result")
+showPage("home")
 
 }
 
@@ -186,27 +324,37 @@ showPage("result")
 
 }
 
-function finishTraining(){
 
-xp += 10
+function runListening(){
 
-localStorage.setItem("xp",xp)
+let time = 5
 
-updateXP()
+let timer = setInterval(()=>{
+
+time--
+document.getElementById("timerListen").innerText = time
+
+if(time==0){
+
+clearInterval(timer)
+
+gainXP(10)
+
+alert("듣기 훈련 완료! +10 XP")
 
 showPage("home")
 
 }
 
-function updateXP(){
+},1000)
 
-document.getElementById("xp").innerText = xp
+}
 
-let percent = (xp % 50)/50*100
+function gainXP(amount){
 
-document.getElementById("xpBar").style.width = percent+"%"
+xp = parseInt(xp) + amount
 
-document.getElementById("xpText").innerText = (xp%50)+" / 50"
+localStorage.setItem("xp",xp)
 
 }
 
