@@ -123,6 +123,10 @@ padding:6px;
 font-size:18px;
 }
 
+.line span {
+  transition: background-color 0.3s;
+}
+
 .activeLine{
 background:#b3e5fc;
 }
@@ -261,33 +265,26 @@ cursor:pointer;
 <!-- BODY TRAINING -->
 
 <div id="body" class="page">
-
-<div class="section">
-
-<h2>스쿼트 발음훈련</h2>
-
-<div id="lines">
-
-<div class="line">나는 매일 더 나은 목소리를 만든다.</div>
-<div class="line">나의 발성은 명확하고 힘이 있다.</div>
-<div class="line">자신감 있는 목소리가 나를 빛나게 한다.</div>
-<div class="line">세상과 소통하는 나의 목소리는 소중하다.</div>
-<div class="line">나는 내 목소리의 주인이 되어 조절한다.</div>
-<div class="line">정확한 발음으로 나의 생각을 전달한다.</div>
-<div class="line">나의 목소리는 무한한 가능성을 가졌다.</div>
-<div class="line">꾸준한 훈련이 최고의 목소리를 만든다.</div>
-<div class="line">나는 나의 목소리를 사랑하고 가꾼다.</div>
-<div class="line">오늘도 나는 한 단계 더 성장한다.</div>
-
+    <div class="section">
+        <h2>스쿼트 발음훈련</h2>
+        <div id="lines">
+            <div class="line" data-text="나는 매일 더 나은 목소리를 만든다."></div>
+            <div class="line" data-text="나의 발성은 명확하고 힘이 있다."></div>
+            <div class="line" data-text="자신감 있는 목소리가 나를 빛나게 한다."></div>
+            <div class="line" data-text="세상과 소통하는 나의 목소리는 소중하다."></div>
+            <div class="line" data-text="나는 내 목소리의 주인이 되어 조절한다."></div>
+            <div class="line" data-text="정확한 발음으로 나의 생각을 전달한다."></div>
+            <div class="line" data-text="나의 목소리는 무한한 가능성을 가졌다."></div>
+            <div class="line" data-text="꾸준한 훈련이 최고의 목소리를 만든다."></div>
+            <div class="line" data-text="나는 나의 목소리를 사랑하고 가꾼다."></div>
+            <div class="line" data-text="오늘도 나는 한 단계 더 성장한다."></div>
+        </div>
+        <h3 id="timer">00:00</h3>
+        <p id="record"></p>
+        <button id="pronunciation-btn" class="training-btn" onclick="togglePronunciation()">훈련 시작</button>
+    </div>
 </div>
 
-<h3 id="timer">60</h3>
-
-<button class="training-btn" onclick="startPronunciation()">훈련 시작</button>
-
-</div>
-
-</div>
 
 <!-- BREATH -->
 
@@ -343,12 +340,12 @@ cursor:pointer;
     <script>
         var disqus_config = function () {
             this.page.url = window.location.href;
-            this.page.identifier = 'quest-page';
+            this.page.identifier = \'quest-page\';
         };
-        (function() { // DON'T EDIT BELOW THIS LINE
-        var d = document, s = d.createElement('script');
-        s.src = 'https://voicehabit.disqus.com/embed.js';
-        s.setAttribute('data-timestamp', +new Date());
+        (function() { // DON\'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement(\'script\');
+        s.src = \'https://voicehabit.disqus.com/embed.js\';
+        s.setAttribute(\'data-timestamp\', +new Date());
         (d.head || d.body).appendChild(s);
         })();
     </script>
@@ -361,7 +358,7 @@ cursor:pointer;
 
 <div class="navbar">
 
-<div class="nav-item" onclick="showPage('home')">🏠</div>
+<div class="nav-item" onclick="showPage(\'home\')">🏠</div>
 <div class="nav-item" onclick="openQuest()">🎒</div>
 <div class="nav-item" onclick="startBodyTraining()">🏋️</div>
 <div class="nav-item" onclick="startBreathTraining()">🌬</div>
@@ -391,48 +388,141 @@ showPage("quest")
 
 /* BODY TRAINING */
 
-function startBodyTraining(){
-showPage("body")
+let timerInterval;
+let seconds = 0;
+let recognition;
+let currentLineIndex = 0;
+let isTrainingRunning = false;
+
+function startBodyTraining() {
+    showPage("body");
+    resetTraining();
+    document.querySelectorAll('.line').forEach(line => {
+        const text = line.getAttribute('data-text');
+        line.innerHTML = '';
+        text.split('').forEach(char => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            line.appendChild(span);
+        });
+    });
 }
 
-function startPronunciation(){
-
-let lines = document.querySelectorAll(".line")
-let index=0
-
-let timer=60
-
-let interval=setInterval(()=>{
-
-document.getElementById("timer").innerText=timer
-
-lines.forEach(l=>l.classList.remove("activeLine"))
-
-if(lines[index]){
-lines[index].classList.add("activeLine")
+function formatTime(sec) {
+    const minutes = Math.floor(sec / 60).toString().padStart(2, '0');
+    const seconds = (sec % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
 }
 
-index++
-
-timer--
-
-if(timer<=0){
-
-clearInterval(interval)
-
-xp+=10
-
-localStorage.setItem("xp",xp)
-
-alert("훈련완료 +10XP")
-
-showPage("quest")
-
+function resetTraining() {
+    clearInterval(timerInterval);
+    seconds = 0;
+    document.getElementById('timer').textContent = '00:00';
+    document.getElementById('record').textContent = '';
+    document.getElementById('pronunciation-btn').textContent = '훈련 시작';
+    isTrainingRunning = false;
+    currentLineIndex = 0;
+    if (recognition) {
+        recognition.stop();
+    }
+    document.querySelectorAll('.line span').forEach(span => {
+        span.classList.remove('activeLine');
+    });
 }
 
-},1000)
-
+function togglePronunciation() {
+    isTrainingRunning = !isTrainingRunning;
+    if (isTrainingRunning) {
+        // Start training
+        document.getElementById('pronunciation-btn').textContent = '정지';
+        timerInterval = setInterval(() => {
+            seconds++;
+            document.getElementById('timer').textContent = formatTime(seconds);
+        }, 1000);
+        startSpeechRecognition();
+    } else {
+        // Stop training
+        document.getElementById('pronunciation-btn').textContent = '훈련 시작';
+        clearInterval(timerInterval);
+        document.getElementById('record').textContent = `연습 시간: ${formatTime(seconds)}`;
+        xp += Math.floor(seconds / 10); // 10초당 1 XP
+        localStorage.setItem("xp", xp);
+        alert(`훈련 완료! +${Math.floor(seconds / 10)}XP`);
+        if (recognition) {
+            recognition.stop();
+        }
+    }
 }
+
+function startSpeechRecognition() {
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!window.SpeechRecognition) {
+        alert("죄송합니다, 당신의 브라우저는 음성 인식을 지원하지 않습니다.");
+        return;
+    }
+
+    recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'ko-KR';
+
+    recognition.onresult = (event) => {
+        let interimTranscript = '';
+        let finalTranscript = '';
+
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+                finalTranscript += event.results[i][0].transcript;
+            } else {
+                interimTranscript += event.results[i][0].transcript;
+            }
+        }
+        
+        const transcript = finalTranscript || interimTranscript;
+        highlightText(transcript.trim());
+    };
+    
+    recognition.onend = () => {
+      // Automatically restart recognition if it stops, but only if training is supposed to be running
+      if (isTrainingRunning) {
+        recognition.start();
+      }
+    };
+
+    recognition.start();
+}
+
+function highlightText(transcript) {
+    if (currentLineIndex >= document.querySelectorAll('.line').length) {
+        togglePronunciation(); // All lines completed, stop the training
+        return;
+    }
+
+    const lineDiv = document.querySelectorAll('.line')[currentLineIndex];
+    const spans = lineDiv.querySelectorAll('span');
+    const originalText = lineDiv.getAttribute('data-text');
+
+    // Highlight matching part
+    let recognizedChars = transcript.replace(/\s/g, '');
+    let originalChars = originalText.replace(/\s/g, '');
+
+    for (let i = 0; i < spans.length; i++) {
+        if (i < recognizedChars.length && spans[i].textContent === recognizedChars[i]) {
+            spans[i].classList.add('activeLine');
+        } else {
+             spans[i].classList.remove('activeLine');
+        }
+    }
+
+    // Check if the whole line is matched
+    if (recognizedChars.length >= originalChars.length && recognizedChars.includes(originalChars)) {
+        currentLineIndex++;
+        if (recognition) {
+            recognition.stop(); // Stop and restart to clear the transcript
+        }
+    }
+}
+
 
 /* BREATH */
 
