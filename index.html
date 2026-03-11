@@ -230,7 +230,7 @@ cursor:pointer;
 }
 
 .training-footer {
-    padding-top: 20px; /* Add some space above the button */
+    padding-top: 20px;
 }
 
 .training-btn {
@@ -644,7 +644,12 @@ function handleRecognition(transcript) {
 /* BREATH */
 
 let breathStep=0;
-let breathList=["1. 허밍", "2. 스~~~~", "3. 하품 호흡", "4. 한숨 호흡"];
+let breathList=[
+    "1. 허밍",
+    "2. 스~~~~~",
+    "3. 하품 호흡",
+    "4. 한숨 호흡"
+];
 
 function startBreathTraining(){
     showPage("breath");
