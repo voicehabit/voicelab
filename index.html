@@ -20,7 +20,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding: 0 15px 80px; /* Adjusted for navbar */
+    padding: 0 15px 180px; /* Adjusted for footer and navbar */
     box-sizing: border-box;
 }
 
@@ -72,6 +72,7 @@ body {
 /* Main Content */
 .main-content {
     flex-grow: 1;
+    overflow-y: auto; /* Make this part scrollable */
 }
 
 .prompt-area {
@@ -143,7 +144,17 @@ body {
 
 /* Footer */
 .footer {
-    padding: 20px 0;
+    position: fixed;
+    bottom: 60px; /* Approximate navbar height */
+    left: 0;
+    right: 0;
+    max-width: 420px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px 15px 15px;
+    box-sizing: border-box;
+    z-index: 10;
+    border-top: 1px solid #eee;
     text-align: center;
 }
 
