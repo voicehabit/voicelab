@@ -7,6 +7,7 @@ This project is an interactive web application designed to guide users through a
 ## Implemented Features
 
 *   Initial project setup with `index.html`, `style.css`, and `main.js`.
+*   **Partnership Inquiry Form:** Added a Formspree-powered contact form at the bottom of the main page for partnership inquiries.
 
 ## Current Plan
 
