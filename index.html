@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
 
 <title>Voice Habit</title>
 
@@ -118,22 +119,48 @@ width:10%;
 
 /* pronunciation */
 
+#timer {
+    font-size: 3.2em;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+}
+
+#record {
+    font-size: 1.2em;
+    color: #555;
+    min-height: 2em;
+    text-align: center;
+    padding: 0 10px;
+}
+
 .line{
-padding:6px;
+padding: 8px;
 font-size:18px;
+border: 2px solid transparent;
+border-radius: 8px;
+margin-bottom: 8px;
+transition: all 0.3s;
 }
 
 .line span {
   transition: background-color 0.3s;
 }
 
-.activeLine{
-background:#b3e5fc;
+.line-active {
+    border-color: #0e7c74;
 }
 
-.error{
-background:#ffcdd2;
+.line-completed {
+    text-decoration: line-through;
+    color: #aaa;
 }
+
+
+.highlight {
+    background-color: #b3e5fc;
+}
+
 
 /* navbar */
 
@@ -173,7 +200,7 @@ cursor:pointer;
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
-  box-sizing: border-box; /* To include padding in the width */
+  box-sizing: border-box;
 }
 
 .form-group textarea {
@@ -279,8 +306,8 @@ cursor:pointer;
             <div class="line" data-text="나는 나의 목소리를 사랑하고 가꾼다."></div>
             <div class="line" data-text="오늘도 나는 한 단계 더 성장한다."></div>
         </div>
-        <h3 id="timer">00:00</h3>
-        <p id="record"></p>
+        <div id="timer">00:00</div>
+        <p id="record">음성 인식 준비 완료</p>
         <button id="pronunciation-btn" class="training-btn" onclick="togglePronunciation()">훈련 시작</button>
     </div>
 </div>
@@ -369,21 +396,16 @@ cursor:pointer;
 
 <script>
 
-let xp = localStorage.getItem("xp") || 0
-let level = localStorage.getItem("level") || 1
+let xp = localStorage.getItem("xp") || 0;
+let level = localStorage.getItem("level") || 1;
 
 function showPage(id){
-
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active")
-})
-
-document.getElementById(id).classList.add("active")
-
+    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
 }
 
 function openQuest(){
-showPage("quest")
+    showPage("quest");
 }
 
 /* BODY TRAINING */
@@ -393,19 +415,23 @@ let seconds = 0;
 let recognition;
 let currentLineIndex = 0;
 let isTrainingRunning = false;
+let finalTranscriptForLine = '';
 
 function startBodyTraining() {
     showPage("body");
     resetTraining();
     document.querySelectorAll('.line').forEach(line => {
         const text = line.getAttribute('data-text');
-        line.innerHTML = '';
+        line.innerHTML = ''; // Clear previous spans
         text.split('').forEach(char => {
             const span = document.createElement('span');
             span.textContent = char;
             line.appendChild(span);
         });
     });
+    if(document.querySelectorAll('.line').length > 0) {
+        document.querySelectorAll('.line')[0].classList.add('line-active');
+    }
 }
 
 function formatTime(sec) {
@@ -418,19 +444,34 @@ function resetTraining() {
     clearInterval(timerInterval);
     seconds = 0;
     document.getElementById('timer').textContent = '00:00';
-    document.getElementById('record').textContent = '';
+    document.getElementById('record').textContent = '음성 인식 준비 완료';
     document.getElementById('pronunciation-btn').textContent = '훈련 시작';
     isTrainingRunning = false;
     currentLineIndex = 0;
+    finalTranscriptForLine = '';
+    
     if (recognition) {
         recognition.stop();
     }
-    document.querySelectorAll('.line span').forEach(span => {
-        span.classList.remove('activeLine');
+
+    document.querySelectorAll('.line').forEach(line => {
+        line.classList.remove('line-active', 'line-completed');
+        line.querySelectorAll('span').forEach(span => {
+            span.classList.remove('highlight');
+        });
     });
 }
 
-function togglePronunciation() {
+async function togglePronunciation() {
+    // Request microphone permission upfront
+    try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (err) {
+        console.error("Microphone permission denied:", err);
+        alert("마이크 사용 권한이 필요합니다. 브라우저 설정에서 마이크를 허용해주세요.");
+        return;
+    }
+
     isTrainingRunning = !isTrainingRunning;
     if (isTrainingRunning) {
         // Start training
@@ -444,10 +485,13 @@ function togglePronunciation() {
         // Stop training
         document.getElementById('pronunciation-btn').textContent = '훈련 시작';
         clearInterval(timerInterval);
-        document.getElementById('record').textContent = `연습 시간: ${formatTime(seconds)}`;
-        xp += Math.floor(seconds / 10); // 10초당 1 XP
-        localStorage.setItem("xp", xp);
-        alert(`훈련 완료! +${Math.floor(seconds / 10)}XP`);
+        const earnedXp = Math.floor(seconds / 10);
+        if (earnedXp > 0) {
+            xp = parseInt(xp) + earnedXp;
+            localStorage.setItem("xp", xp);
+            alert(`훈련 완료! +${earnedXp}XP`);
+        }
+        document.getElementById('record').textContent = `총 연습 시간: ${formatTime(seconds)}`;
         if (recognition) {
             recognition.stop();
         }
@@ -466,59 +510,82 @@ function startSpeechRecognition() {
     recognition.interimResults = true;
     recognition.lang = 'ko-KR';
 
+    recognition.onstart = () => {
+        document.getElementById('record').textContent = "음성 인식 중...";
+    };
+
+    recognition.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        let errorMessage = "음성 인식 오류가 발생했습니다.";
+        if (event.error === 'no-speech') {
+            errorMessage = "음성이 감지되지 않았습니다. 마이크를 확인해주세요.";
+        } else if (event.error === 'not-allowed') {
+            errorMessage = "마이크 사용이 차단되었습니다. 접근 권한을 확인해주세요.";
+        }
+        document.getElementById('record').textContent = errorMessage;
+    };
+    
+    recognition.onend = () => {
+      if (isTrainingRunning) {
+        console.log("Recognition service ended. Restarting...");
+        recognition.start();
+      } else {
+        console.log("Recognition service stopped by user.");
+      }
+    };
+
     recognition.onresult = (event) => {
         let interimTranscript = '';
-        let finalTranscript = '';
-
         for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
-                finalTranscript += event.results[i][0].transcript;
+                finalTranscriptForLine += event.results[i][0].transcript;
             } else {
                 interimTranscript += event.results[i][0].transcript;
             }
         }
         
-        const transcript = finalTranscript || interimTranscript;
-        highlightText(transcript.trim());
-    };
-    
-    recognition.onend = () => {
-      // Automatically restart recognition if it stops, but only if training is supposed to be running
-      if (isTrainingRunning) {
-        recognition.start();
-      }
+        document.getElementById('record').textContent = finalTranscriptForLine + interimTranscript;
+        highlightText(finalTranscriptForLine + interimTranscript);
     };
 
     recognition.start();
 }
 
 function highlightText(transcript) {
-    if (currentLineIndex >= document.querySelectorAll('.line').length) {
-        togglePronunciation(); // All lines completed, stop the training
+    const lines = document.querySelectorAll('.line');
+    if (currentLineIndex >= lines.length) {
         return;
     }
 
-    const lineDiv = document.querySelectorAll('.line')[currentLineIndex];
+    const lineDiv = lines[currentLineIndex];
     const spans = lineDiv.querySelectorAll('span');
     const originalText = lineDiv.getAttribute('data-text');
 
-    // Highlight matching part
-    let recognizedChars = transcript.replace(/\s/g, '');
-    let originalChars = originalText.replace(/\s/g, '');
+    const cleanOriginal = originalText.replace(/\s/g, '');
+    const cleanTranscript = transcript.replace(/\s/g, '');
 
-    for (let i = 0; i < spans.length; i++) {
-        if (i < recognizedChars.length && spans[i].textContent === recognizedChars[i]) {
-            spans[i].classList.add('activeLine');
+    spans.forEach((span, i) => {
+        if (i < cleanTranscript.length && span.textContent === cleanTranscript[i]) {
+            span.classList.add('highlight');
         } else {
-             spans[i].classList.remove('activeLine');
+            span.classList.remove('highlight');
         }
-    }
+    });
 
-    // Check if the whole line is matched
-    if (recognizedChars.length >= originalChars.length && recognizedChars.includes(originalChars)) {
+    if (cleanTranscript.includes(cleanOriginal)) {
+        lineDiv.classList.remove('line-active');
+        lineDiv.classList.add('line-completed');
+        
+        // Move to the next line
         currentLineIndex++;
-        if (recognition) {
-            recognition.stop(); // Stop and restart to clear the transcript
+        finalTranscriptForLine = ''; // Reset for the next line
+
+        if (currentLineIndex < lines.length) {
+            lines[currentLineIndex].classList.add('line-active');
+        } else {
+            // All lines completed
+            alert("모든 문장 훈련 완료!");
+            togglePronunciation(); // Stop the training session
         }
     }
 }
@@ -526,93 +593,63 @@ function highlightText(transcript) {
 
 /* BREATH */
 
-let breathStep=0
-
-let breathList=[
-"1. 허밍",
-"2. 스~~~~",
-"3. 하품 호흡",
-"4. 한숨 호흡"
-]
+let breathStep=0;
+let breathList=["1. 허밍", "2. 스~~~~", "3. 하품 호흡", "4. 한숨 호흡"];
 
 function startBreathTraining(){
-
-showPage("breath")
-
-breathStep=0
-
-document.getElementById("breathStep").innerText=breathList[0]
-
+    showPage("breath");
+    breathStep=0;
+    document.getElementById("breathStep").innerText=breathList[0];
 }
 
 function nextBreath(){
-
-breathStep++
-
-if(breathStep>=breathList.length){
-
-xp+=10
-
-localStorage.setItem("xp",xp)
-
-alert("호흡훈련 완료 +10XP")
-
-showPage("quest")
-
-return
-}
-
-document.getElementById("breathStep").innerText=breathList[breathStep]
-
+    breathStep++;
+    if(breathStep>=breathList.length){
+        xp = parseInt(xp) + 10;
+        localStorage.setItem("xp",xp);
+        alert("호흡훈련 완료 +10XP");
+        showPage("quest");
+        return;
+    }
+    document.getElementById("breathStep").innerText=breathList[breathStep];
 }
 
 /* RECORD */
 
-let recorder
-let audioBlob
+let recorder;
+let audioBlob;
 
 async function startRecording(){
-
-let stream = await navigator.mediaDevices.getUserMedia({audio:true})
-
-recorder = new MediaRecorder(stream)
-
-recorder.start()
-
-recorder.ondataavailable = e=>{
-audioBlob=e.data
-}
-
-setTimeout(()=>{
-recorder.stop()
-alert("녹음 완료")
-},3000)
-
+    try {
+        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
+        recorder = new MediaRecorder(stream);
+        recorder.start();
+        recorder.ondataavailable = e => { audioBlob=e.data; };
+        
+        setTimeout(() => {
+            recorder.stop();
+            alert("녹음 완료");
+        }, 3000);
+    } catch (err) {
+        alert("마이크 사용 권한이 필요합니다.");
+    }
 }
 
 function playRecording(){
-
-if(!audioBlob) return alert("녹음 없음")
-
-let audio = new Audio(URL.createObjectURL(audioBlob))
-
-audio.play()
-
+    if(!audioBlob) return alert("녹음된 파일이 없습니다.");
+    let audio = new Audio(URL.createObjectURL(audioBlob));
+    audio.play();
 }
 
 /* QUEST */
 
 function updateQuest(){
-
-let percent=(xp/50)*100
-
-document.getElementById("questBar").style.width=percent+"%"
-
-document.getElementById("questScore").innerText=xp+" / 50"
-
+    let percent = (parseInt(xp) / 50) * 100;
+    document.getElementById("questBar").style.width = percent + "%";
+    document.getElementById("questScore").innerText = `${parseInt(xp)} / 50`;
 }
 
-setInterval(updateQuest,500)
+setInterval(updateQuest, 500);
 
 </script>
 
