@@ -3,413 +3,252 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-
-<title>Voice Habit - Body Training</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voice Habit</title>
 
 <style>
-
-/* Basic Body and Centering Styles */
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
-background: #f0f2f5;
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5;
 }
 
-.app{
-max-width:420px;
-margin:0 auto;
-background:white;
-min-height:100vh;
-padding-bottom:80px; /* Adjust for navbar height */
-box-sizing: border-box;
-display: flex;
-flex-direction: column;
+.app {
+    max-width: 420px;
+    margin: 0 auto;
+    background: #fff;
+    min-height: 100vh;
+    padding-bottom: 80px; /* Space for nav bar */
+    box-sizing: border-box;
 }
 
-/* Training Page Layout */
-.page {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.training-header {
-    display: flex;
-    align-items: center;
-    padding: 10px 20px;
-    border-bottom: 2px solid #eee;
-}
-
-.training-header .title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-.training-progress {
-    flex-grow: 1;
-    height: 16px;
-    background: #eee;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-left: 20px;
-}
-
-.training-progress-bar {
-    width: 0%;
-    height: 100%;
-    background: #ffc800;
-    border-radius: 8px;
-    transition: width 0.3s ease;
-}
-
-.training-content {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-}
-
-.training-main {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    text-align: center;
-}
-
-/* Mascot and Speech Bubble */
-.prompt-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.mascot {
-    width: 250px;
-    height: 250px;
-}
-
-.speech-bubble {
-    position: relative;
-    background: white;
-    border: 2px solid #ccc;
-    padding: 10px 15px;
-    border-radius: 15px;
-    font-size: 1.2em;
-    color: #333;
-    max-width: 220px;
-    margin-bottom: 10px;
-}
-
-.speech-bubble::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: -10px;
-    transform: translateX(-50%);
-    border-width: 10px 10px 0;
-    border-style: solid;
-    border-color: #ccc transparent;
-}
-
-/* Timer and Word Display */
-#stopwatch {
-    font-size: 3.5em;
-    font-weight: bold;
-}
-
-.answer-area {
-    border-bottom: 2px solid #eee;
-    min-height: 50px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    padding-bottom: 10px;
-}
-
-.word-options {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.word-btn {
-    background: white;
-    border: 2px solid #eee;
-    border-radius: 12px;
-    padding: 15px 25px;
-    font-size: 22px;
-    cursor: default;
-    box-shadow: 0 2px 0 #ddd;
-}
-
-.word-btn.completed {
-    background: #eee;
-    color: #aaa;
-    box-shadow: none;
-    transform: translateY(2px);
-}
-
-/* Footer and Control Button */
-.training-footer {
-    padding-top: 20px;
-}
-
-.training-btn {
-    width: 100%;
-    background: #58CC02;
+/* Header */
+.header {
+    background: linear-gradient(170deg, #1a8a7e, #1f3f9c);
     color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 0 #4aa002;
+    padding: 20px 20px 70px 20px;
+    border-radius: 0 0 30px 30px;
 }
 
-.training-btn:disabled {
-    background: #ccc;
-    box-shadow: 0 4px 0 #bbb;
+.header h1 {
+    margin: 20px 0;
+    font-size: 28px;
+    font-weight: bold;
 }
+
+/* Review Card */
+.review-card {
+    background: #3c5aa6cc;
+    border-radius: 25px;
+    padding: 25px;
+    position: relative;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    backdrop-filter: blur(10px);
+}
+
+.review-text h2 {
+    margin: 0 0 10px 0;
+    font-size: 22px;
+}
+
+.review-text p {
+    margin: 0;
+    font-size: 16px;
+    opacity: 0.8;
+}
+
+.start-btn {
+    margin-top: 20px;
+    background: white;
+    color: #4a40e0;
+    border: none;
+    padding: 14px 25px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.review-mascot {
+    position: absolute;
+    right: 5px;
+    bottom: -15px;
+    width: 120px;
+}
+
+/* Main Content */
+.main-content {
+    padding: 0 20px;
+    margin-top: -40px; /* Pulls the content up over the header's rounded corner */
+    position: relative;
+    z-index: 2;
+}
+
+.section h2 {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 30px 0 15px 5px;
+}
+
+.card {
+    background: #fdfdfd;
+    border: 1px solid #f0f0f0;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.icon-bg {
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+}
+
+.mic { background-color: #e0f8f0; color: #1abc9c; }
+.speaker { background-color: #dbeafe; color: #3b82f6; }
+
+/* Collection Card */
+.collection-card {
+    align-items: flex-start;
+}
+.collection-text h3 {
+    margin: 0 0 5px 0;
+    font-size: 18px;
+}
+.collection-text p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+.refresh {
+    background-color: #fff0d6;
+    color: #ff9800;
+    position: relative;
+}
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
 
 /* Bottom Navigation Bar */
-.navbar{
-    position:fixed;
-    bottom:0;
-    left:0;
-    right:0;
-    background:white;
-    border-top:1px solid #eee;
-    display:flex;
-    justify-content:space-around;
-    max-width:420px;
-    margin:0 auto;
+.navbar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-around;
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 5px 0;
+    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
 }
 
-.nav-item{
-    font-size: 30px;
-    padding: 15px 20px;
-    color: #ccc; /* Disabled look */
+.nav-item {
+    font-size: 28px;
+    cursor: pointer;
+    padding: 10px;
+    color: #aaa;
+    transition: color 0.2s;
 }
-
 .nav-item.active {
-    color: #1f3f9c; /* Active icon color */
+    color: #fbc531;
 }
 
 </style>
 </head>
-
 <body>
 
 <div class="app">
-
-    <!-- BODY TRAINING PAGE -->
-    <div id="body" class="page">
-        <div class="training-header">
-            <div class="title">몸 훈련</div>
-            <div class="training-progress">
-                <div id="training-progress-bar" class="training-progress-bar"></div>
+    <!-- Header -->
+    <div class="header">
+        <h1>오늘의 복습</h1>
+        <div class="review-card">
+            <div class="review-text">
+                <h2>듣기 집중 복습</h2>
+                <p>집중 듣기 연습으로<br>귀를 훈련하세요.</p>
+                <button class="start-btn">시작 +20 XP</button>
             </div>
-        </div>
-        <div class="training-content">
-            <div class="training-main">
-                <div class="prompt-area">
-                    <div class="speech-bubble">스쿼트를 시작해 볼까요?</div>
-                    <img src="/img/mascot.png" alt="Mascot" class="mascot"/>
-                </div>
-                <div id="stopwatch">00:00</div>
-                <div class="answer-area" id="answer-area"></div>
-                <div class="word-options" id="word-options"></div>
-            </div>
-            <div class="training-footer">
-                <button id="training-btn" class="training-btn" onclick="toggleTraining()">시작</button>
-            </div>
+            <img src="/img/mascot.png" alt="Mascot" class="review-mascot"/>
         </div>
     </div>
 
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="section">
+            <h2>회화</h2>
+            <div class="card">
+                <span>말하기</span>
+                <div class="icon-bg mic">🎤</div>
+            </div>
+            <div class="card">
+                <span>듣기</span>
+                <div class="icon-bg speaker">🔊</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>내 컬렉션</h2>
+            <div class="card collection-card">
+                <div class="collection-text">
+                    <h3>연습할 틀린 문제 2개</h3>
+                    <p>맞춤형 레슨으로 틀린 문제를 복습해보세요.</p>
+                </div>
+                <div class="icon-bg refresh">
+                    <span class="notification-badge">2</span>
+                    <span>🔄</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- NAV -->
 <div class="navbar">
-    <div class="nav-item">🏠</div>
-    <div class="nav-item">🎒</div>
-    <div class="nav-item active">🏋️</div>
-    <div class="nav-item">🌬</div>
-    <div class="nav-item">⋯</div>
+    <div class="nav-item active">🏠</div>
+    <div class="nav-item">🗃️</div>
+    <div class="nav-item">💖</div>
+    <div class="nav-item">💬</div>
+    <div class="nav-item">👥</div>
+    <div class="nav-item">···</div>
 </div>
 
-
 <script>
-
-let currentSentence = "";
-let wordsToRecognize = [];
-let recognizedWords = [];
-let recognition;
-let isTrainingRunning = false;
-let timerInterval;
-let seconds = 0;
-
-const sentences = [
-    "나는 매일 더 나은 목소리를 만든다",
-    "나의 발성은 명확하고 힘이 있다",
-    "자신감 있는 목소리가 나를 빛나게 한다"
-];
-
-document.addEventListener('DOMContentLoaded', () => {
-    loadSentence();
-});
-
-function loadSentence() {
-    currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
-    wordsToRecognize = currentSentence.split(' ');
-    recognizedWords = [];
-
-    const wordOptions = document.getElementById('word-options');
-    wordOptions.innerHTML = '';
-    wordsToRecognize.forEach(word => {
-        const btn = document.createElement('button');
-        btn.className = 'word-btn';
-        btn.textContent = word;
-        wordOptions.appendChild(btn);
-    });
-    
-    updateAnswerArea();
-    updateProgressBar();
-}
-
-function updateAnswerArea() {
-    const answerArea = document.getElementById('answer-area');
-    answerArea.innerHTML = '';
-    recognizedWords.forEach(word => {
-        const wordSpan = document.createElement('span');
-        wordSpan.className = 'word-btn completed';
-        wordSpan.textContent = word;
-        answerArea.appendChild(wordSpan);
-    });
-}
-
-function updateProgressBar() {
-    const progress = (recognizedWords.length / wordsToRecognize.length) * 100;
-    document.getElementById('training-progress-bar').style.width = `${progress}%`;
-}
-
-function formatTime(sec) {
-    const minutes = Math.floor(sec / 60).toString().padStart(2, '0');
-    const seconds = (sec % 60).toString().padStart(2, '0');
-    return `${minutes}:${seconds}`;
-}
-
-function resetTrainingState() {
-    clearInterval(timerInterval);
-    seconds = 0;
-    document.getElementById('stopwatch').textContent = '00:00';
-    document.getElementById('training-btn').textContent = '시작';
-    isTrainingRunning = false;
-    if (recognition) {
-        recognition.stop();
-    }
-}
-
-function toggleTraining() {
-    isTrainingRunning = !isTrainingRunning;
-    if (isTrainingRunning) {
-        startTraining();
-    } else {
-        stopTraining();
-    }
-}
-
-async function startTraining() {
-    try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
-        document.getElementById('training-btn').textContent = '정지';
-        timerInterval = setInterval(() => {
-            seconds++;
-            document.getElementById('stopwatch').textContent = formatTime(seconds);
-        }, 1000);
-        startSpeechRecognition();
-    } catch (err) {
-        console.error("Microphone permission denied:", err);
-        alert("마이크 사용 권한이 필요합니다.");
-        isTrainingRunning = false;
-    }
-}
-
-function stopTraining() {
-    document.getElementById('training-btn').textContent = '시작';
-    clearInterval(timerInterval);
-    if (recognition) {
-        recognition.stop();
-    }
-    
-    if (recognizedWords.length > 0) {
-        alert(`훈련 완료!`);
-    }
-}
-
-function startSpeechRecognition() {
-    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!window.SpeechRecognition) {
-        alert("음성 인식을 지원하지 않는 브라우저입니다.");
-        return;
-    }
-
-    recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'ko-KR';
-
-    recognition.onresult = (event) => {
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                const transcript = event.results[i][0].transcript.trim();
-                handleRecognition(transcript);
-            }
-        }
-    };
-    
-    recognition.onend = () => {
-        if (isTrainingRunning) {
-            recognition.start();
-        }
-    };
-
-    recognition.start();
-}
-
-function handleRecognition(transcript) {
-    const nextWordToRecognize = wordsToRecognize[recognizedWords.length];
-    if (transcript.includes(nextWordToRecognize)) {
-        recognizedWords.push(nextWordToRecognize);
-        updateAnswerArea();
-        updateProgressBar();
-
-        const wordOptions = document.getElementById('word-options');
-        const uncompletedWord = Array.from(wordOptions.children).find(btn => !btn.classList.contains('completed'));
-        if (uncompletedWord && uncompletedWord.textContent === nextWordToRecognize) {
-            uncompletedWord.classList.add('completed');
-        }
-
-        if (recognizedWords.length === wordsToRecognize.length) {
-            stopTraining();
-            setTimeout(() => {
-                alert("문장 완성!");
-                resetTrainingState();
-                loadSentence();
-            }, 1000);
-        }
-    }
-}
-
+// All previous JavaScript for squat training has been removed.
+// This page is currently static.
 </script>
 
 </body>
