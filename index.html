@@ -147,10 +147,6 @@ transition: all 0.3s;
   transition: background-color 0.3s;
 }
 
-.line-active {
-    border-color: #0e7c74;
-}
-
 .line-completed {
     text-decoration: line-through;
     color: #aaa;
@@ -429,9 +425,6 @@ function startBodyTraining() {
             line.appendChild(span);
         });
     });
-    if(document.querySelectorAll('.line').length > 0) {
-        document.querySelectorAll('.line')[0].classList.add('line-active');
-    }
 }
 
 function formatTime(sec) {
@@ -455,7 +448,7 @@ function resetTraining() {
     }
 
     document.querySelectorAll('.line').forEach(line => {
-        line.classList.remove('line-active', 'line-completed');
+        line.classList.remove('line-completed');
         line.querySelectorAll('span').forEach(span => {
             span.classList.remove('highlight');
         });
@@ -573,7 +566,6 @@ function highlightText(transcript) {
     });
 
     if (cleanTranscript.includes(cleanOriginal)) {
-        lineDiv.classList.remove('line-active');
         lineDiv.classList.add('line-completed');
         
         // Move to the next line
@@ -581,7 +573,6 @@ function highlightText(transcript) {
         finalTranscriptForLine = ''; // Reset for the next line
 
         if (currentLineIndex < lines.length) {
-            lines[currentLineIndex].classList.add('line-active');
         } else {
             // All lines completed
             alert("모든 문장 훈련 완료!");
