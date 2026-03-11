@@ -5,103 +5,33 @@
 <meta charset="UTF-8">
 <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
 
-<title>Voice Habit</title>
+<title>Voice Habit - Body Training</title>
 
 <style>
 
-/*
-  The body element is the main container for the whole page.
-  We reset its margin to 0 to remove any default browser spacing.
-*/
+/* Basic Body and Centering Styles */
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
 background: #f0f2f5;
 }
 
-.page{
-display:none;
-}
-
-.page.active{
-display:block;
-}
-
-/*
-  .app is the main container for our mobile application content.
-  - 'max-width: 420px;' ensures it doesn't get too wide on larger screens.
-  - 'margin: 0 auto;' is the standard and correct way to horizontally center a block element
-    that has a defined width or max-width. '0' sets the top/bottom margin, and 'auto'
-    tells the browser to automatically distribute the remaining horizontal space
-    equally on the left and right, thus centering the element.
-*/
 .app{
 max-width:420px;
-margin:0 auto; /* This is the key for centering */
+margin:0 auto;
 background:white;
 min-height:100vh;
-padding-bottom:100px;
+padding-bottom:80px; /* Adjust for navbar height */
 box-sizing: border-box;
+display: flex;
+flex-direction: column;
 }
 
-/* header */
-
-.header{
-background:linear-gradient(180deg,#0e7c74,#1f3f9c);
-color:white;
-padding:25px;
-}
-
-.header h1{
-margin:0;
-font-size:26px;
-}
-
-/* review card */
-
-.review-card{
-background:rgba(255,255,255,0.15);
-border-radius:20px;
-padding:20px;
-margin-top:20px;
-}
-
-.start-btn{
-margin-top:20px;
-background:white;
-color:#4a40e0;
-border:none;
-padding:14px 20px;
-border-radius:14px;
-font-weight:bold;
-font-size:16px;
-cursor:pointer;
-}
-
-/* section */
-
-.section{
-padding:20px;
-text-align: center;
-}
-
-.card{
-background:#f5f5f5;
-border-radius:18px;
-padding:20px;
-margin-bottom:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-cursor:pointer;
-}
-
-/* Training Page */
-
-#body.active {
+/* Training Page Layout */
+.page {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 100px);
+    flex-grow: 1;
 }
 
 .training-header {
@@ -111,11 +41,10 @@ cursor:pointer;
     border-bottom: 2px solid #eee;
 }
 
-.training-header .close-btn {
-    font-size: 24px;
-    color: #ccc;
-    cursor: pointer;
-    margin-right: 15px;
+.training-header .title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
 }
 
 .training-progress {
@@ -124,6 +53,7 @@ cursor:pointer;
     background: #eee;
     border-radius: 8px;
     overflow: hidden;
+    margin-left: 20px;
 }
 
 .training-progress-bar {
@@ -147,8 +77,10 @@ cursor:pointer;
     flex-direction: column;
     justify-content: space-evenly;
     align-items: center;
+    text-align: center;
 }
 
+/* Mascot and Speech Bubble */
 .prompt-area {
     display: flex;
     flex-direction: column;
@@ -171,39 +103,23 @@ cursor:pointer;
     color: #333;
     max-width: 220px;
     margin-bottom: 10px;
-    text-align: center;
-}
-
-.speech-bubble::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: -12px;
-    transform: translateX(-50%);
-    border-width: 12px 12px 0;
-    border-style: solid;
-    border-color: #ccc transparent;
-    display: block;
-    width: 0;
 }
 
 .speech-bubble::after {
     content: '';
     position: absolute;
     left: 50%;
-    bottom: -9px;
+    bottom: -10px;
     transform: translateX(-50%);
     border-width: 10px 10px 0;
     border-style: solid;
-    border-color: white transparent;
-    display: block;
-    width: 0;
+    border-color: #ccc transparent;
 }
 
+/* Timer and Word Display */
 #stopwatch {
     font-size: 3.5em;
     font-weight: bold;
-    text-align: center;
 }
 
 .answer-area {
@@ -212,6 +128,7 @@ cursor:pointer;
     margin-bottom: 20px;
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
     padding-bottom: 10px;
 }
@@ -230,9 +147,8 @@ cursor:pointer;
     border-radius: 12px;
     padding: 15px 25px;
     font-size: 22px;
-    cursor: pointer;
+    cursor: default;
     box-shadow: 0 2px 0 #ddd;
-    transition: all 0.2s;
 }
 
 .word-btn.completed {
@@ -242,6 +158,7 @@ cursor:pointer;
     transform: translateY(2px);
 }
 
+/* Footer and Control Button */
 .training-footer {
     padding-top: 20px;
 }
@@ -264,59 +181,28 @@ cursor:pointer;
     box-shadow: 0 4px 0 #bbb;
 }
 
-
-/* quest */
-
-.quest-header{
-background:#f57c00;
-color:white;
-padding:25px;
-}
-
-.progress{
-background:#ddd;
-height:16px;
-border-radius:20px;
-overflow:hidden;
-}
-
-.bar{
-background:#ff9800;
-height:16px;
-width:10%;
-}
-
-
-/*
-  .navbar is the fixed navigation bar at the bottom.
-  - 'position: fixed;' takes it out of the normal document flow and fixes it relative to the viewport.
-  - 'bottom: 0; left: 0; right: 0;' pins it to the bottom, stretching its containing box across the full viewport width.
-  - 'max-width: 420px;' limits the actual width of the navbar content.
-  - 'margin: 0 auto;' centers the navbar content within its full-width containing box.
-    This works in combination with left:0, right:0, and max-width.
-*/
+/* Bottom Navigation Bar */
 .navbar{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:white;
-border-top:1px solid #eee;
-display:flex;
-justify-content:space-around;
-max-width:420px;
-margin:0 auto; /* This centers the nav content */
+    position:fixed;
+    bottom:0;
+    left:0;
+    right:0;
+    background:white;
+    border-top:1px solid #eee;
+    display:flex;
+    justify-content:space-around;
+    max-width:420px;
+    margin:0 auto;
 }
 
 .nav-item{
     font-size: 30px;
-    cursor: pointer;
-    padding: 10px 20px;
-    border-radius: 12px;
+    padding: 15px 20px;
+    color: #ccc; /* Disabled look */
 }
 
-.nav-item:hover {
-    background: #f5f5f5;
+.nav-item.active {
+    color: #1f3f9c; /* Active icon color */
 }
 
 </style>
@@ -326,35 +212,10 @@ margin:0 auto; /* This centers the nav content */
 
 <div class="app">
 
-    <!-- HOME -->
-    <div id="home" class="page active">
-        <div class="header">
-            <h1>오늘의 복습</h1>
-            <div class="review-card">
-                <div style="font-size:22px;font-weight:bold;">귀와 발성 연결 훈련</div>
-                <div style="margin-top:10px;">소리를 듣고 몸과 발성을 동시에 훈련합니다</div>
-                <button class="start-btn" onclick="openQuest()">시작 +20 XP</button>
-            </div>
-        </div>
-
-        <div class="section">
-            <h2>훈련</h2>
-            <div class="card" onclick="startBodyTraining()">
-                <div>몸훈련</div>
-                <div>🏋️</div>
-            </div>
-            <div class="card" onclick="startBreathTraining()">
-                <div>호흡훈련</div>
-                <div>🌬</div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- BODY TRAINING -->
+    <!-- BODY TRAINING PAGE -->
     <div id="body" class="page">
         <div class="training-header">
-            <div class="close-btn" onclick="showPage('home')">✕</div>
+            <div class="title">몸 훈련</div>
             <div class="training-progress">
                 <div id="training-progress-bar" class="training-progress-bar"></div>
             </div>
@@ -375,46 +236,20 @@ margin:0 auto; /* This centers the nav content */
         </div>
     </div>
 
-    <!-- BREATH -->
-    <div id="breath" class="page">
-        <div class="section">
-            <h2>호흡훈련</h2>
-            <div id="breathStep">1. 허밍</div>
-            <button class="start-btn" onclick="nextBreath()">다음</button>
-        </div>
-    </div>
-
-    <!-- QUEST -->
-    <div id="quest" class="page">
-        <div class="quest-header">
-            <h1>3월 발성 퀘스트</h1>
-            <div class="progress">
-                <div class="bar" id="questBar"></div>
-            </div>
-            <div id="questScore">0 / 50</div>
-        </div>
-        <div class="section">
-            <div class="card" onclick="startRecording()">음성 녹음하기</div>
-            <div class="card" onclick="playRecording()">음성 저장고</div>
-        </div>
-    </div>
-
 </div>
 
 <!-- NAV -->
 <div class="navbar">
-    <div class="nav-item" onclick="showPage('home')">🏠</div>
-    <div class="nav-item" onclick="openQuest()">🎒</div>
-    <div class="nav-item" onclick="startBodyTraining()">🏋️</div>
-    <div class="nav-item" onclick="startBreathTraining()">🌬</div>
+    <div class="nav-item">🏠</div>
+    <div class="nav-item">🎒</div>
+    <div class="nav-item active">🏋️</div>
+    <div class="nav-item">🌬</div>
     <div class="nav-item">⋯</div>
 </div>
 
 
 <script>
 
-let xp = localStorage.getItem("xp") || 0;
-let level = localStorage.getItem("level") || 1;
 let currentSentence = "";
 let wordsToRecognize = [];
 let recognizedWords = [];
@@ -429,20 +264,9 @@ const sentences = [
     "자신감 있는 목소리가 나를 빛나게 한다"
 ];
 
-function showPage(id){
-    document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
-}
-
-function openQuest(){
-    showPage("quest");
-}
-
-function startBodyTraining() {
-    showPage("body");
-    resetTrainingState();
+document.addEventListener('DOMContentLoaded', () => {
     loadSentence();
-}
+});
 
 function loadSentence() {
     currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
@@ -467,7 +291,7 @@ function updateAnswerArea() {
     answerArea.innerHTML = '';
     recognizedWords.forEach(word => {
         const wordSpan = document.createElement('span');
-        wordSpan.className = 'word-btn';
+        wordSpan.className = 'word-btn completed';
         wordSpan.textContent = word;
         answerArea.appendChild(wordSpan);
     });
@@ -526,12 +350,9 @@ function stopTraining() {
     if (recognition) {
         recognition.stop();
     }
-    const earnedXp = recognizedWords.length * 5;
-     if (earnedXp > 0) {
-        xp = parseInt(xp) + earnedXp;
-        localStorage.setItem("xp", xp);
-        alert(`훈련 완료! +${earnedXp}XP`);
-        updateQuest();
+    
+    if (recognizedWords.length > 0) {
+        alert(`훈련 완료!`);
     }
 }
 
@@ -573,11 +394,9 @@ function handleRecognition(transcript) {
         updateProgressBar();
 
         const wordOptions = document.getElementById('word-options');
-        for(const btn of wordOptions.children) {
-            if(btn.textContent === nextWordToRecognize) {
-                btn.classList.add('completed');
-                break;
-            }
+        const uncompletedWord = Array.from(wordOptions.children).find(btn => !btn.classList.contains('completed'));
+        if (uncompletedWord && uncompletedWord.textContent === nextWordToRecognize) {
+            uncompletedWord.classList.add('completed');
         }
 
         if (recognizedWords.length === wordsToRecognize.length) {
@@ -590,72 +409,6 @@ function handleRecognition(transcript) {
         }
     }
 }
-
-
-/* BREATH */
-
-let breathStep=0;
-let breathList=[
-    "1. 허밍",
-    "2. 스~~~~~",
-    "3. 하품 호흡",
-    "4. 한숨 호흡"
-];
-
-function startBreathTraining(){
-    showPage("breath");
-    breathStep=0;
-    document.getElementById('breathStep').innerText=breathList[0];
-}
-
-function nextBreath(){
-    breathStep++;
-    if(breathStep>=breathList.length){
-        xp = parseInt(xp) + 10;
-        localStorage.setItem('xp',xp);
-        alert("호흡훈련 완료 +10XP");
-        showPage("quest");
-        return;
-    }
-    document.getElementById('breathStep').innerText=breathList[breathStep];
-}
-
-/* RECORD */
-
-let recorder;
-let audioBlob;
-
-async function startRecording(){
-    try {
-        let stream = await navigator.mediaDevices.getUserMedia({audio:true});
-        recorder = new MediaRecorder(stream);
-        recorder.start();
-        recorder.ondataavailable = e => { audioBlob=e.data; };
-        
-        setTimeout(() => {
-            recorder.stop();
-            alert("녹음 완료");
-        }, 3000);
-    } catch (err) {
-        alert("마이크 사용 권한이 필요합니다.");
-    }
-}
-
-function playRecording(){
-    if(!audioBlob) return alert("녹음된 파일이 없습니다.");
-    let audio = new Audio(URL.createObjectURL(audioBlob));
-    audio.play();
-}
-
-/* QUEST */
-
-function updateQuest(){
-    let percent = (parseInt(xp) / 50) * 100;
-    document.getElementById('questBar').style.width = percent + "%";
-    document.getElementById('questScore').innerText = `${parseInt(xp)} / 50`;
-}
-
-setInterval(updateQuest, 500);
 
 </script>
 
