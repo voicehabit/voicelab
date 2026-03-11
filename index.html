@@ -69,6 +69,7 @@ cursor:pointer;
 
 .section{
 padding:20px;
+text-align: center;
 }
 
 .card{
@@ -82,19 +83,6 @@ align-items:center;
 cursor:pointer;
 }
 
-.training-btn{
-display: block;
-width: 100%;
-background:#f5f5f5;
-border-radius:18px;
-padding:20px;
-margin-bottom:15px;
-justify-content:space-between;
-align-items:center;
-cursor:pointer;
-border: none;
-font-size: 16px;
-}
 
 /* quest */
 
@@ -126,37 +114,50 @@ width:10%;
     margin: 20px 0;
 }
 
-#record {
-    font-size: 1.2em;
-    color: #555;
-    min-height: 2em;
-    text-align: center;
-    padding: 0 10px;
+.category-buttons {
+    margin-bottom: 20px;
 }
 
-.line{
-padding: 8px;
-font-size:18px;
-border: 2px solid transparent;
-border-radius: 8px;
-margin-bottom: 8px;
-transition: all 0.3s;
+.category-btn {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 10px 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    margin: 0 5px;
+    font-size: 14px;
 }
 
-.line span {
-  transition: background-color 0.3s;
+.category-btn.active {
+    background: #0e7c74;
+    color: white;
+    border-color: #0e7c74;
 }
 
-.line-completed {
-    text-decoration: line-through;
-    color: #aaa;
+#text-display-area {
+    font-size: 1.5em;
+    color: #333;
+    min-height: 120px;
+    padding: 20px;
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    margin: 20px 0;
 }
 
-
-.highlight {
-    background-color: #b3e5fc;
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
 }
 
+.control-btn {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    padding: 15px 30px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 18px;
+}
 
 /* navbar */
 
@@ -289,22 +290,21 @@ cursor:pointer;
 
 <div id="body" class="page">
     <div class="section">
-        <h2>스쿼트 발음훈련</h2>
-        <div id="lines">
-            <div class="line" data-text="나는 매일 더 나은 목소리를 만든다."></div>
-            <div class="line" data-text="나의 발성은 명확하고 힘이 있다."></div>
-            <div class="line" data-text="자신감 있는 목소리가 나를 빛나게 한다."></div>
-            <div class="line" data-text="세상과 소통하는 나의 목소리는 소중하다."></div>
-            <div class="line" data-text="나는 내 목소리의 주인이 되어 조절한다."></div>
-            <div class="line" data-text="정확한 발음으로 나의 생각을 전달한다."></div>
-            <div class="line" data-text="나의 목소리는 무한한 가능성을 가졌다."></div>
-            <div class="line" data-text="꾸준한 훈련이 최고의 목소리를 만든다."></div>
-            <div class="line" data-text="나는 나의 목소리를 사랑하고 가꾼다."></div>
-            <div class="line" data-text="오늘도 나는 한 단계 더 성장한다."></div>
+        <h2>스쿼트를 시작해 볼까?</h2>
+        <div class="category-buttons">
+            <button class="category-btn active" onclick="loadCategory('좋은글', this)">좋은글</button>
+            <button class="category-btn" onclick="loadCategory('단문', this)">단문</button>
+            <button class="category-btn" onclick="loadCategory('성경', this)">성경</button>
+            <button class="category-btn" onclick="loadCategory('내글', this)">내글</button>
         </div>
+        <div id="text-display-area">“ 여기에 글이 표시된다 ”</div>
+        
         <div id="timer">00:00</div>
-        <p id="record">음성 인식 준비 완료</p>
-        <button id="pronunciation-btn" class="training-btn" onclick="togglePronunciation()">훈련 시작</button>
+
+        <div class="control-buttons">
+            <button class="control-btn" id="start-btn" onclick="startTraining()">시작</button>
+            <button class="control-btn" id="stop-btn" onclick="stopTraining()">정지</button>
+        </div>
     </div>
 </div>
 
@@ -409,22 +409,26 @@ function openQuest(){
 let timerInterval;
 let seconds = 0;
 let recognition;
-let currentLineIndex = 0;
 let isTrainingRunning = false;
-let finalTranscriptForLine = '';
+
+const trainingTexts = {
+    '좋은글': '나는 매일 더 나은 목소리를 만든다.',
+    '단문': '나의 발성은 명확하고 힘이 있다.',
+    '성경': '태초에 하나님이 천지를 창조하시니라.',
+    '내글': '여기에 여러분의 글을 넣어보세요.'
+};
 
 function startBodyTraining() {
     showPage("body");
     resetTraining();
-    document.querySelectorAll('.line').forEach(line => {
-        const text = line.getAttribute('data-text');
-        line.innerHTML = ''; // Clear previous spans
-        text.split('').forEach(char => {
-            const span = document.createElement('span');
-            span.textContent = char;
-            line.appendChild(span);
-        });
-    });
+    loadCategory('좋은글', document.querySelector('.category-btn'));
+}
+
+function loadCategory(category, element) {
+    document.getElementById('text-display-area').textContent = `“ ${trainingTexts[category]} ”`;
+    document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+    if(element) element.classList.add('active');
+    resetTraining();
 }
 
 function formatTime(sec) {
@@ -437,26 +441,15 @@ function resetTraining() {
     clearInterval(timerInterval);
     seconds = 0;
     document.getElementById('timer').textContent = '00:00';
-    document.getElementById('record').textContent = '음성 인식 준비 완료';
-    document.getElementById('pronunciation-btn').textContent = '훈련 시작';
     isTrainingRunning = false;
-    currentLineIndex = 0;
-    finalTranscriptForLine = '';
-    
     if (recognition) {
         recognition.stop();
     }
-
-    document.querySelectorAll('.line').forEach(line => {
-        line.classList.remove('line-completed');
-        line.querySelectorAll('span').forEach(span => {
-            span.classList.remove('highlight');
-        });
-    });
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('stop-btn').disabled = true;
 }
 
-async function togglePronunciation() {
-    // Request microphone permission upfront
+async function startTraining() {
     try {
         await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (err) {
@@ -465,29 +458,33 @@ async function togglePronunciation() {
         return;
     }
 
-    isTrainingRunning = !isTrainingRunning;
-    if (isTrainingRunning) {
-        // Start training
-        document.getElementById('pronunciation-btn').textContent = '정지';
-        timerInterval = setInterval(() => {
-            seconds++;
-            document.getElementById('timer').textContent = formatTime(seconds);
-        }, 1000);
-        startSpeechRecognition();
-    } else {
-        // Stop training
-        document.getElementById('pronunciation-btn').textContent = '훈련 시작';
-        clearInterval(timerInterval);
-        const earnedXp = Math.floor(seconds / 10);
-        if (earnedXp > 0) {
-            xp = parseInt(xp) + earnedXp;
-            localStorage.setItem("xp", xp);
-            alert(`훈련 완료! +${earnedXp}XP`);
-        }
-        document.getElementById('record').textContent = `총 연습 시간: ${formatTime(seconds)}`;
-        if (recognition) {
-            recognition.stop();
-        }
+    isTrainingRunning = true;
+    document.getElementById('start-btn').disabled = true;
+    document.getElementById('stop-btn').disabled = false;
+
+    timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById('timer').textContent = formatTime(seconds);
+    }, 1000);
+
+    startSpeechRecognition();
+}
+
+function stopTraining() {
+    isTrainingRunning = false;
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('stop-btn').disabled = true;
+
+    clearInterval(timerInterval);
+    const earnedXp = Math.floor(seconds / 10);
+    if (earnedXp > 0) {
+        xp = parseInt(xp) + earnedXp;
+        localStorage.setItem("xp", xp);
+        alert(`훈련 완료! +${earnedXp}XP`);
+    }
+    
+    if (recognition) {
+        recognition.stop();
     }
 }
 
@@ -504,7 +501,7 @@ function startSpeechRecognition() {
     recognition.lang = 'ko-KR';
 
     recognition.onstart = () => {
-        document.getElementById('record').textContent = "음성 인식 중...";
+        document.getElementById('text-display-area').textContent = "음성 인식 중...";
     };
 
     recognition.onerror = (event) => {
@@ -515,7 +512,7 @@ function startSpeechRecognition() {
         } else if (event.error === 'not-allowed') {
             errorMessage = "마이크 사용이 차단되었습니다. 접근 권한을 확인해주세요.";
         }
-        document.getElementById('record').textContent = errorMessage;
+        document.getElementById('text-display-area').textContent = errorMessage;
     };
     
     recognition.onend = () => {
@@ -528,57 +525,14 @@ function startSpeechRecognition() {
     };
 
     recognition.onresult = (event) => {
-        let interimTranscript = '';
+        let transcript = '';
         for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-                finalTranscriptForLine += event.results[i][0].transcript;
-            } else {
-                interimTranscript += event.results[i][0].transcript;
-            }
+            transcript += event.results[i][0].transcript;
         }
-        
-        document.getElementById('record').textContent = finalTranscriptForLine + interimTranscript;
-        highlightText(finalTranscriptForLine + interimTranscript);
+        document.getElementById('text-display-area').textContent = transcript;
     };
 
     recognition.start();
-}
-
-function highlightText(transcript) {
-    const lines = document.querySelectorAll('.line');
-    if (currentLineIndex >= lines.length) {
-        return;
-    }
-
-    const lineDiv = lines[currentLineIndex];
-    const spans = lineDiv.querySelectorAll('span');
-    const originalText = lineDiv.getAttribute('data-text');
-
-    const cleanOriginal = originalText.replace(/\s/g, '');
-    const cleanTranscript = transcript.replace(/\s/g, '');
-
-    spans.forEach((span, i) => {
-        if (i < cleanTranscript.length && span.textContent === cleanTranscript[i]) {
-            span.classList.add('highlight');
-        } else {
-            span.classList.remove('highlight');
-        }
-    });
-
-    if (cleanTranscript.includes(cleanOriginal)) {
-        lineDiv.classList.add('line-completed');
-        
-        // Move to the next line
-        currentLineIndex++;
-        finalTranscriptForLine = ''; // Reset for the next line
-
-        if (currentLineIndex < lines.length) {
-        } else {
-            // All lines completed
-            alert("모든 문장 훈련 완료!");
-            togglePronunciation(); // Stop the training session
-        }
-    }
 }
 
 
