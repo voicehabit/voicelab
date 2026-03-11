@@ -12,7 +12,7 @@
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
-background: white;
+background: #f0f2f5;
 }
 
 .page{
@@ -28,7 +28,7 @@ max-width:420px;
 margin:auto;
 background:white;
 min-height:100vh;
-padding-bottom:80px;
+padding-bottom:100px; /* Adjusted padding for new navbar height */
 }
 
 /* header */
@@ -88,7 +88,7 @@ cursor:pointer;
 #body.active {
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 80px); /* Adjust for navbar height */
+    height: calc(100vh - 80px);
 }
 
 .training-header {
@@ -131,9 +131,9 @@ cursor:pointer;
 
 .prompt-area {
     display: flex;
-    flex-direction: column; /* Speech bubble on top */
+    flex-direction: column;
     align-items: center;
-    margin-top: 20px; /* Added margin */
+    margin-top: 20px;
     margin-bottom: 20px;
 }
 
@@ -143,7 +143,7 @@ cursor:pointer;
 }
 
 .speech-bubble {
-    position: relative; /* Changed from absolute */
+    position: relative;
     background: white;
     border: 2px solid #ccc;
     padding: 10px 15px;
@@ -151,10 +151,9 @@ cursor:pointer;
     font-size: 1em;
     color: #333;
     max-width: 180px;
-    margin-bottom: 10px; /* Space between bubble and mascot */
+    margin-bottom: 10px;
 }
 
-/* Triangle border */
 .speech-bubble::before {
     content: '';
     position: absolute;
@@ -168,7 +167,6 @@ cursor:pointer;
     width: 0;
 }
 
-/* Triangle fill */
 .speech-bubble::after {
     content: '';
     position: absolute;
@@ -181,7 +179,6 @@ cursor:pointer;
     display: block;
     width: 0;
 }
-
 
 #stopwatch {
     font-size: 2.5em;
@@ -281,14 +278,19 @@ background:white;
 border-top:1px solid #eee;
 display:flex;
 justify-content:space-around;
-padding:10px 0;
 max-width:420px;
 margin:auto;
 }
 
 .nav-item{
-font-size:22px;
-cursor:pointer;
+    font-size: 30px;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 12px;
+}
+
+.nav-item:hover {
+    background: #f5f5f5;
 }
 
 /* Form Styles */
@@ -333,174 +335,121 @@ cursor:pointer;
 
 <body>
 
-<!-- HOME -->
-
-<div id="home" class="page active">
-
 <div class="app">
 
-<div class="header">
-
-<h1>오늘의 복습</h1>
-
-<div class="review-card">
-
-<div style="font-size:22px;font-weight:bold;">
-귀와 발성 연결 훈련
-</div>
-
-<div style="margin-top:10px;">
-소리를 듣고 몸과 발성을 동시에 훈련합니다
-</div>
-
-<button class="start-btn" onclick="openQuest()">
-시작 +20 XP
-</button>
-
-</div>
-
-</div>
-
-
-<div class="section">
-
-<h2>훈련</h2>
-
-<div class="card" onclick="startBodyTraining()">
-<div>몸훈련</div>
-<div>🏋️</div>
-</div>
-
-<div class="card" onclick="startBreathTraining()">
-<div>호흡훈련</div>
-<div>🌬</div>
-</div>
-
-</div>
-
-<div class="section">
-  <h2>제휴 문의</h2>
-  <form action="https://formspree.io/f/xaqpoqqg" method="POST">
-    <div class="form-group">
-      <label for="email">이메일</label>
-      <input type="email" id="email" name="email" required>
-    </div>
-    <div class="form-group">
-      <label for="message">문의 내용</label>
-      <textarea id="message" name="message" rows="4" required></textarea>
-    </div>
-    <button type="submit" class="submit-btn">보내기</button>
-  </form>
-</div>
-
-</div>
-
-</div>
-
-<!-- BODY TRAINING -->
-<div id="body" class="page">
-    <div class="training-header">
-        <div class="close-btn" onclick="showPage('home')">✕</div>
-        <div class="training-progress">
-            <div id="training-progress-bar" class="training-progress-bar"></div>
-        </div>
-    </div>
-    <div class="training-content">
-        <div>
-            <div class="prompt-area">
-                <div class="speech-bubble">스쿼트를 시작해 볼까요?</div>
-                <img src="/img/mascot.png" alt="Mascot" class="mascot"/>
+    <!-- HOME -->
+    <div id="home" class="page active">
+        <div class="header">
+            <h1>오늘의 복습</h1>
+            <div class="review-card">
+                <div style="font-size:22px;font-weight:bold;">귀와 발성 연결 훈련</div>
+                <div style="margin-top:10px;">소리를 듣고 몸과 발성을 동시에 훈련합니다</div>
+                <button class="start-btn" onclick="openQuest()">시작 +20 XP</button>
             </div>
-            <div id="stopwatch">00:00</div>
-            <div class="answer-area" id="answer-area"></div>
-            <div class="word-options" id="word-options"></div>
         </div>
-        <div class="training-footer">
-            <button id="training-btn" class="training-btn" onclick="toggleTraining()">시작</button>
+
+        <div class="section">
+            <h2>훈련</h2>
+            <div class="card" onclick="startBodyTraining()">
+                <div>몸훈련</div>
+                <div>🏋️</div>
+            </div>
+            <div class="card" onclick="startBreathTraining()">
+                <div>호흡훈련</div>
+                <div>🌬</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>제휴 문의</h2>
+            <form action="https://formspree.io/f/xaqpoqqg" method="POST">
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">문의 내용</label>
+                    <textarea id="message" name="message" rows="4" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">보내기</button>
+            </form>
         </div>
     </div>
-</div>
 
+    <!-- BODY TRAINING -->
+    <div id="body" class="page">
+        <div class="training-header">
+            <div class="close-btn" onclick="showPage('home')">✕</div>
+            <div class="training-progress">
+                <div id="training-progress-bar" class="training-progress-bar"></div>
+            </div>
+        </div>
+        <div class="training-content">
+            <div>
+                <div class="prompt-area">
+                    <div class="speech-bubble">스쿼트를 시작해 볼까요?</div>
+                    <img src="/img/mascot.png" alt="Mascot" class="mascot"/>
+                </div>
+                <div id="stopwatch">00:00</div>
+                <div class="answer-area" id="answer-area"></div>
+                <div class="word-options" id="word-options"></div>
+            </div>
+            <div class="training-footer">
+                <button id="training-btn" class="training-btn" onclick="toggleTraining()">시작</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- BREATH -->
+    <div id="breath" class="page">
+        <div class="section">
+            <h2>호흡훈련</h2>
+            <div id="breathStep">1. 허밍</div>
+            <button class="start-btn" onclick="nextBreath()">다음</button>
+        </div>
+    </div>
 
-<!-- BREATH -->
-
-<div id="breath" class="page">
-
-<div class="section">
-
-<h2>호흡훈련</h2>
-
-<div id="breathStep">
-
-1. 허밍
-
-</div>
-
-<button onclick="nextBreath()">다음</button>
-
-</div>
-
-</div>
-
-<!-- QUEST -->
-
-<div id="quest" class="page">
-
-<div class="quest-header">
-
-<h1>3월 발성 퀘스트</h1>
-
-<div class="progress">
-<div class="bar" id="questBar"></div>
-</div>
-
-<div id="questScore">0 / 50</div>
-
-</div>
-
-<div class="section">
-
-<div class="card" onclick="startRecording()">
-음성 녹음하기
-</div>
-
-<div class="card" onclick="playRecording()">
-음성 저장고
-</div>
-
-</div>
-
-<div class="section">
-    <h2>댓글</h2>
-    <div id="disqus_thread"></div>
-    <script>
-        var disqus_config = function () {
-            this.page.url = window.location.href;
-            this.page.identifier = \'quest-page\';
-        };
-        (function() { // DON\'T EDIT BELOW THIS LINE
-        var d = document, s = d.createElement(\'script\');
-        s.src = \'https://voicehabit.disqus.com/embed.js\';
-        s.setAttribute(\'data-timestamp\', +new Date());
-        (d.head || d.body).appendChild(s);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
+    <!-- QUEST -->
+    <div id="quest" class="page">
+        <div class="quest-header">
+            <h1>3월 발성 퀘스트</h1>
+            <div class="progress">
+                <div class="bar" id="questBar"></div>
+            </div>
+            <div id="questScore">0 / 50</div>
+        </div>
+        <div class="section">
+            <div class="card" onclick="startRecording()">음성 녹음하기</div>
+            <div class="card" onclick="playRecording()">음성 저장고</div>
+        </div>
+        <div class="section">
+            <h2>댓글</h2>
+            <div id="disqus_thread"></div>
+            <script>
+                var disqus_config = function () {
+                    this.page.url = window.location.href;
+                    this.page.identifier = 'quest-page';
+                };
+                (function() { // DON\'T EDIT BELOW THIS LINE
+                var d = document, s = d.createElement('script');
+                s.src = 'https://voicehabit.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        </div>
+    </div>
 
 </div>
 
 <!-- NAV -->
-
 <div class="navbar">
-
-<div class="nav-item" onclick="showPage(\'home\')">🏠</div>
-<div class="nav-item" onclick="openQuest()">🎒</div>
-<div class="nav-item" onclick="startBodyTraining()">🏋️</div>
-<div class="nav-item" onclick="startBreathTraining()">🌬</div>
-<div class="nav-item">⋯</div>
-
+    <div class="nav-item" onclick="showPage('home')">🏠</div>
+    <div class="nav-item" onclick="openQuest()">🎒</div>
+    <div class="nav-item" onclick="startBodyTraining()">🏋️</div>
+    <div class="nav-item" onclick="startBreathTraining()">🌬</div>
+    <div class="nav-item">⋯</div>
 </div>
 
 
