@@ -4,188 +4,169 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Voice Habit</title>
+<title>들은 내용을 탭하세요</title>
 
 <style>
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: #f0f2f5;
+    background: #fff;
+    color: #4c4c4c;
 }
 
 .app {
     max-width: 420px;
     margin: 0 auto;
-    background: #fff;
-    min-height: 100vh;
-    padding-bottom: 80px; /* Space for nav bar */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 0 15px;
     box-sizing: border-box;
 }
 
 /* Header */
-.header {
-    background: linear-gradient(170deg, #1a8a7e, #1f3f9c);
-    color: white;
-    padding: 20px 20px 70px 20px;
-    border-radius: 0 0 30px 30px;
-}
-
-.header h1 {
-    margin: 20px 0;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-/* Review Card */
-.review-card {
-    background: #3c5aa6cc;
-    border-radius: 25px;
-    padding: 25px;
-    position: relative;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+.exercise-header {
+    padding: 15px 0;
     display: flex;
     align-items: center;
-    backdrop-filter: blur(10px);
+    gap: 15px;
 }
 
-.review-text h2 {
-    margin: 0 0 10px 0;
-    font-size: 22px;
-}
-
-.review-text p {
-    margin: 0;
-    font-size: 16px;
-    opacity: 0.8;
-}
-
-.start-btn {
-    margin-top: 20px;
-    background: white;
-    color: #4a40e0;
-    border: none;
-    padding: 14px 25px;
-    border-radius: 14px;
-    font-weight: bold;
-    font-size: 16px;
+.close-btn {
+    font-size: 24px;
+    color: #ccc;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    font-weight: bold;
 }
 
-.review-mascot {
-    position: absolute;
-    right: 5px;
-    bottom: -15px;
-    width: 120px;
+.progress-bar-container {
+    flex-grow: 1;
+    height: 16px;
+    background: #eee;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 60%; /* Example progress */
+    height: 100%;
+    background: linear-gradient(90deg, #ffc800, #ff9800);
+    border-radius: 8px;
+}
+
+.status-icons {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: #1f3f9c;
+    font-weight: bold;
+}
+
+/* Title */
+.exercise-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 20px 0;
 }
 
 /* Main Content */
 .main-content {
-    padding: 0 20px;
-    margin-top: -40px; /* Pulls the content up over the header's rounded corner */
-    position: relative;
-    z-index: 2;
+    flex-grow: 1;
 }
 
-.section h2 {
-    font-size: 22px;
-    font-weight: bold;
-    margin: 30px 0 15px 5px;
-}
-
-.card {
-    background: #fdfdfd;
-    border: 1px solid #f0f0f0;
-    border-radius: 18px;
-    padding: 20px;
-    margin-bottom: 15px;
+.prompt-area {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    font-size: 18px;
-    font-weight: 500;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.mascot {
+    width: 100px;
+    margin-right: 15px;
+}
+
+.speech-bubble {
+    display: flex;
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 5px;
+}
+
+.sound-btn {
+    font-size: 30px;
+    padding: 10px 15px;
     cursor: pointer;
-    transition: transform 0.2s;
+    color: #1a8a7e;
 }
 
-.card:hover {
-    transform: translateY(-2px);
+.sound-btn.slow {
+    border-left: 2px solid #eee;
 }
 
-.icon-bg {
-    font-size: 24px;
-    width: 50px;
-    height: 50px;
+.answer-area {
+    border-bottom: 2px solid #eee;
+    min-height: 50px;
     display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-bottom: 10px;
+    margin-bottom: 30px;
 }
 
-.mic { background-color: #e0f8f0; color: #1abc9c; }
-.speaker { background-color: #dbeafe; color: #3b82f6; }
-
-/* Collection Card */
-.collection-card {
-    align-items: flex-start;
-}
-.collection-text h3 {
-    margin: 0 0 5px 0;
-    font-size: 18px;
-}
-.collection-text p {
-    margin: 0;
-    font-size: 14px;
-    color: #666;
-}
-.refresh {
-    background-color: #fff0d6;
-    color: #ff9800;
-    position: relative;
-}
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #ff4757;
-    color: white;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
+.word-bank {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    font-weight: bold;
+    gap: 10px;
 }
 
-
-/* Bottom Navigation Bar */
-.navbar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.word-btn {
     background: white;
-    border-top: 1px solid #f0f0f0;
-    display: flex;
-    justify-content: space-around;
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 5px 0;
-    box-shadow: 0 -5px 15px rgba(0,0,0,0.05);
+    border: 2px solid #eee;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #ddd;
+    transition: all 0.2s;
+    color: #4c4c4c;
+    font-weight: 500;
 }
 
-.nav-item {
-    font-size: 28px;
-    cursor: pointer;
-    padding: 10px;
-    color: #aaa;
-    transition: color 0.2s;
+.word-btn:hover {
+    background-color: #f7f7f7;
 }
-.nav-item.active {
-    color: #fbc531;
+
+.word-btn.selected {
+    visibility: hidden; /* Hide the button in the bank when selected */
+}
+
+/* Footer */
+.footer {
+    padding: 20px 0;
+    text-align: center;
+}
+
+.skip-link {
+    color: #ccc;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.confirm-btn {
+    width: 100%;
+    background: #e5e5e5;
+    color: #bcbcbc;
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: not-allowed;
+    box-shadow: 0 4px 0 #cccccc;
 }
 
 </style>
@@ -193,62 +174,70 @@ body {
 <body>
 
 <div class="app">
-    <!-- Header -->
-    <div class="header">
-        <h1>오늘의 복습</h1>
-        <div class="review-card">
-            <div class="review-text">
-                <h2>듣기 집중 복습</h2>
-                <p>집중 듣기 연습으로<br>귀를 훈련하세요.</p>
-                <button class="start-btn">시작 +20 XP</button>
-            </div>
-            <img src="/img/mascot.png" alt="Mascot" class="review-mascot"/>
+    <div class="exercise-header">
+        <span class="close-btn">✕</span>
+        <div class="progress-bar-container">
+            <div class="progress-bar"></div>
         </div>
+        <div class="status-icons">⚡️ ∞</div>
     </div>
 
-    <!-- Main Content -->
+    <h1 class="exercise-title">들은 내용을 탭하세요</h1>
+
     <div class="main-content">
-        <div class="section">
-            <h2>회화</h2>
-            <div class="card">
-                <span>말하기</span>
-                <div class="icon-bg mic">🎤</div>
-            </div>
-            <div class="card">
-                <span>듣기</span>
-                <div class="icon-bg speaker">🔊</div>
+        <div class="prompt-area">
+            <img src="/img/mascot.png" alt="Mascot" class="mascot"/>
+            <div class="speech-bubble">
+                <span class="sound-btn">🔊</span>
+                <span class="sound-btn slow">🐢</span>
             </div>
         </div>
 
-        <div class="section">
-            <h2>내 컬렉션</h2>
-            <div class="card collection-card">
-                <div class="collection-text">
-                    <h3>연습할 틀린 문제 2개</h3>
-                    <p>맞춤형 레슨으로 틀린 문제를 복습해보세요.</p>
-                </div>
-                <div class="icon-bg refresh">
-                    <span class="notification-badge">2</span>
-                    <span>🔄</span>
-                </div>
-            </div>
+        <div class="answer-area" id="answer-area"></div>
+
+        <div class="word-bank" id="word-bank">
+            <!-- Word buttons will be inserted here by JavaScript -->
         </div>
     </div>
-</div>
 
-<!-- NAV -->
-<div class="navbar">
-    <div class="nav-item active">🏠</div>
-    <div class="nav-item">🗃️</div>
-    <div class="nav-item">💖</div>
-    <div class="nav-item">💬</div>
-    <div class="nav-item">👥</div>
-    <div class="nav-item">···</div>
+    <div class="footer">
+        <button class="skip-link">지금 들을 수 없어요</button>
+        <button class="confirm-btn" id="confirm-btn" disabled>확인</button>
+    </div>
 </div>
 
 <script>
-// All previous JavaScript for squat training has been removed.
-// This page is currently static.
+const words = ["con", "azúcar", "favor", "helado", "hola", "pan", "por", "té", "Un"];
+const wordBank = document.getElementById('word-bank');
+const answerArea = document.getElementById('answer-area');
+
+// Populate the word bank
+words.forEach((word, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'word-btn';
+    btn.textContent = word;
+    btn.dataset.id = index;
+    wordBank.appendChild(btn);
+    
+    btn.addEventListener('click', () => selectWord(btn));
+});
+
+function selectWord(wordBtn) {
+    wordBtn.classList.add('selected'); // Hide in the bank
+
+    const answerBtn = wordBtn.cloneNode(true);
+    answerBtn.classList.remove('selected');
+    answerArea.appendChild(answerBtn);
+
+    answerBtn.addEventListener('click', () => deselectWord(answerBtn));
+}
+
+function deselectWord(answerBtn) {
+    const originalWordBtn = wordBank.querySelector(`[data-id="${answerBtn.dataset.id}"]`);
+    originalWordBtn.classList.remove('selected'); // Show it back in the bank
+    answerArea.removeChild(answerBtn);
+}
+
 </script>
 
 </body>
