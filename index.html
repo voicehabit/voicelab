@@ -9,6 +9,10 @@
 
 <style>
 
+/*
+  The body element is the main container for the whole page.
+  We reset its margin to 0 to remove any default browser spacing.
+*/
 body{
 margin:0;
 font-family:-apple-system,BlinkMacSystemFont,Segoe UI;
@@ -23,9 +27,17 @@ display:none;
 display:block;
 }
 
+/*
+  .app is the main container for our mobile application content.
+  - 'max-width: 420px;' ensures it doesn't get too wide on larger screens.
+  - 'margin: 0 auto;' is the standard and correct way to horizontally center a block element
+    that has a defined width or max-width. '0' sets the top/bottom margin, and 'auto'
+    tells the browser to automatically distribute the remaining horizontal space
+    equally on the left and right, thus centering the element.
+*/
 .app{
 max-width:420px;
-margin:auto;
+margin:0 auto; /* This is the key for centering */
 background:white;
 min-height:100vh;
 padding-bottom:100px;
@@ -275,8 +287,14 @@ width:10%;
 }
 
 
-/* navbar */
-
+/*
+  .navbar is the fixed navigation bar at the bottom.
+  - 'position: fixed;' takes it out of the normal document flow and fixes it relative to the viewport.
+  - 'bottom: 0; left: 0; right: 0;' pins it to the bottom, stretching its containing box across the full viewport width.
+  - 'max-width: 420px;' limits the actual width of the navbar content.
+  - 'margin: 0 auto;' centers the navbar content within its full-width containing box.
+    This works in combination with left:0, right:0, and max-width.
+*/
 .navbar{
 position:fixed;
 bottom:0;
@@ -287,7 +305,7 @@ border-top:1px solid #eee;
 display:flex;
 justify-content:space-around;
 max-width:420px;
-margin:auto;
+margin:0 auto; /* This centers the nav content */
 }
 
 .nav-item{
