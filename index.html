@@ -1,521 +1,243 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>플랭크 발성 훈련</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 보이스 트레이닝</title>
+    <style>
+        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f7; color: #4c4c4c; overflow: hidden; }
+        .app { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; height: 100vh; padding: 0 15px 160px; box-sizing: border-box; background: white; position: relative; }
+        
+        /* Header */
+        .exercise-header { padding: 15px 0; display: flex; align-items: center; gap: 10px; }
+        .close-btn { font-size: 24px; color: #ccc; cursor: pointer; }
+        .progress-bar-container { flex-grow: 1; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; }
+        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s; }
 
-<style>
-body{
-margin:0;
-font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-background:#f7f7f7;
-color:#4c4c4c;
-}
+        .exercise-title { font-size: 22px; font-weight: bold; margin: 10px 0; }
 
-.app{
-max-width:420px;
-margin:0 auto;
-display:flex;
-flex-direction:column;
-height:100vh;
-padding:0 15px 160px;
-box-sizing:border-box;
-background:white;
-}
+        /* Main Content */
+        .main-content { flex-grow: 1; display: flex; flex-direction: column; }
+        .prompt-area { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; position: relative; padding-top: 40px; }
+        .mascot { width: 120px; transition: transform 0.3s; }
+        .mascot.speaking { transform: scale(1.1); }
 
-.exercise-header{
-padding:15px 0;
-display:flex;
-align-items:center;
-gap:10px;
-}
+        .speech-bubble-top { position: absolute; top: 0; background: #1f3f9c; color: white; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 14px; }
+        .speech-bubble-top::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-top: 8px solid #1f3f9c; border-left: 8px solid transparent; border-right: 8px solid transparent; }
 
-.progress-bar-container{
-flex-grow:1;
-height:16px;
-background:#eee;
-border-radius:8px;
-overflow:hidden;
-}
+        /* Answer & Word Bank */
+        .answer-area { border-bottom: 2px solid #eee; min-height: 120px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; padding: 10px; margin-bottom: 20px; background: #fafafa; border-radius: 12px; }
+        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 150px; }
 
-.progress-bar{
-width:0%;
-height:100%;
-background:linear-gradient(90deg,#ffc800,#ff9800);
-transition:width .1s linear;
-}
+        /* Button Styles */
+        .word-btn { 
+            background: white; border: 2px solid #eee; border-radius: 12px; padding: 12px 18px; 
+            font-size: 16px; cursor: pointer; box-shadow: 0 3px 0 #ddd; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            color: #4c4c4c; font-weight: bold; position: relative;
+        }
+        .word-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #ddd; }
+        .word-btn.selected { opacity: 0.3; pointer-events: none; transform: scale(0.9); }
+        
+        /* Animation Target */
+        .flying-word { position: fixed; z-index: 100; pointer-events: none; transition: all 0.4s ease-in-out; }
 
-.exercise-title{
-font-size:24px;
-font-weight:bold;
-margin:10px 0;
-}
+        /* Footer */
+        .footer { position: fixed; bottom: 60px; left: 0; right: 0; max-width: 420px; margin: 0 auto; padding: 15px; background: white; }
+        .control-btn { width: 100%; background: #1f3f9c; color: white; border: none; border-radius: 15px; padding: 18px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #152b6d; }
+        .control-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; }
 
-.main-content{
-flex-grow:1;
-overflow-y:auto;
-}
-
-.prompt-area{
-display:flex;
-align-items:center;
-justify-content:center;
-margin-bottom:20px;
-}
-
-.mascot{
-width:150px;
-}
-
-.answer-area{
-border-bottom:2px solid #eee;
-min-height:50px;
-display:flex;
-flex-wrap:wrap;
-gap:10px;
-padding-bottom:10px;
-margin-bottom:30px;
-}
-
-.word-bank{
-display:flex;
-flex-wrap:wrap;
-justify-content:center;
-gap:10px;
-}
-
-.word-btn{
-background:white;
-border:2px solid #eee;
-border-radius:12px;
-padding:10px 20px;
-font-size:18px;
-box-shadow:0 2px 0 #ddd;
-font-weight:500;
-pointer-events:none;
-}
-
-.footer{
-position:fixed;
-bottom:60px;
-left:0;
-right:0;
-max-width:420px;
-margin:0 auto;
-background:white;
-padding:20px;
-}
-
-.control-btn{
-width:100%;
-background:#4CAF50;
-color:white;
-border:none;
-border-radius:12px;
-padding:15px;
-font-size:20px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.navbar{
-position:fixed;
-bottom:0;
-left:0;
-right:0;
-background:white;
-display:flex;
-justify-content:space-around;
-max-width:420px;
-margin:0 auto;
-border-top:1px solid #eee;
-}
-
-.nav-item{
-display:flex;
-flex-direction:column;
-align-items:center;
-font-size:22px;
-padding:10px;
-color:#ccc;
-}
-
-.nav-item.active{
-color:#1f3f9c;
-}
-
-.nav-text{
-font-size:12px;
-}
-</style>
+        .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; max-width: 420px; margin: 0 auto; height: 60px; border-top: 1px solid #eee; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc; width: 33%; text-decoration: none; }
+        .nav-item.active { color: #1f3f9c; }
+    </style>
 </head>
-
 <body>
-
-<div class="app">
-
-<div class="exercise-header">
-<span>0분</span>
-<div class="progress-bar-container">
-<div class="progress-bar" id="plank-progress-bar"></div>
-</div>
-<span>1분</span>
-</div>
-
-<h1 class="exercise-title">플랭크를 하며 낱말을 읽어요</h1>
-
-<div class="main-content">
-
-<div class="prompt-area">
-<img src="/img/mascot.png" class="mascot">
-</div>
-
-<div class="answer-area" id="answer-area"></div>
-
-<div class="word-bank" id="word-bank"></div>
-
-</div>
-</div>
-
-<div class="footer">
-<button class="control-btn" id="control-btn">시작</button>
-</div>
-
-<div class="navbar">
-<div class="nav-item">🏠<div class="nav-text">홈</div></div>
-<div class="nav-item active">🏋️<div class="nav-text">연습</div></div>
-<div class="nav-item">📈<div class="nav-text">기록</div></div>
-</div>
-
-<script>
-
-/* =======================
-100개의 실제 문장
-======================= */
-
-let sentences=[
-
-"나는 매일 더 나은 목소리를 만든다",
-"플랭크는 몸과 정신을 동시에 단련한다",
-"오늘의 작은 운동이 내일의 건강을 만든다",
-"호흡을 깊게 하면 목소리는 더 안정된다",
-"나는 포기하지 않는 사람이다",
-"작은 습관이 인생을 바꾼다",
-"몸이 강해지면 마음도 강해진다",
-"꾸준함이 결국 변화를 만든다",
-"오늘도 나는 성장하고 있다",
-"지금 이 순간이 나를 만든다",
-
-"건강한 몸은 최고의 자산이다",
-"운동은 최고의 투자다",
-"플랭크는 코어를 강하게 만든다",
-"호흡은 발성의 시작이다",
-"좋은 목소리는 좋은 호흡에서 시작된다",
-"나는 나의 몸을 존중한다",
-"나는 나의 목소리를 사랑한다",
-"노력은 배신하지 않는다",
-"작은 반복이 큰 변화를 만든다",
-"오늘의 연습이 내일의 실력이다",
-
-"마음이 흔들리면 호흡을 정리하라",
-"몸을 단련하면 생각도 단단해진다",
-"나는 오늘도 나를 이긴다",
-"지금의 고통은 내일의 힘이다",
-"나는 더 강해질 수 있다",
-"지금 포기하지 않는 것이 중요하다",
-"하루의 작은 승리가 인생을 바꾼다",
-"집중하면 몸은 따라온다",
-"호흡을 느끼면 몸이 안정된다",
-"나는 매일 조금씩 발전한다",
-
-"강한 사람은 포기하지 않는다",
-"성장은 반복 속에서 만들어진다",
-"나는 지금 성장하고 있다",
-"내 몸은 점점 강해지고 있다",
-"내 목소리는 점점 안정된다",
-"나는 꾸준히 나아간다",
-"나는 내 한계를 넘는다",
-"나는 내 가능성을 믿는다",
-"오늘의 노력은 의미가 있다",
-"나는 지금 집중하고 있다",
-
-"할 수 있다고 믿어라",
-"계속 움직이면 길이 열린다",
-"오늘은 어제보다 강하다",
-"포기하지 않는 사람이 결국 이긴다",
-"지금이 바로 시작이다",
-"내 안에는 힘이 있다",
-"나는 나를 믿는다",
-"몸은 생각보다 강하다",
-"마음은 몸을 움직인다",
-"행동이 인생을 만든다",
-
-"믿음은 바라는 것들의 실상이다",
-"진리가 너희를 자유롭게 하리라",
-"강하고 담대하라 두려워하지 말라",
-"항상 기뻐하라 쉬지 말고 기도하라",
-"사랑은 모든 것을 견딘다",
-"온유한 자는 복이 있나니",
-"너희 염려를 하나님께 맡기라",
-"빛은 어둠 속에서 빛난다",
-"믿음은 행동으로 증명된다",
-"감사는 기적을 만든다",
-
-"성공은 반복된 노력의 결과다",
-"위대한 일은 작은 일의 반복이다",
-"행동 없는 꿈은 환상이다",
-"지금 시작하는 것이 중요하다",
-"노력은 언제나 길을 만든다",
-"시간은 가장 공평한 자산이다",
-"작은 습관이 운명을 만든다",
-"집중은 힘을 만든다",
-"꾸준함은 천재를 이긴다",
-"오늘도 계속 나아가라",
-
-"몸이 움직이면 생각도 움직인다",
-"운동은 최고의 약이다",
-"몸과 마음은 연결되어 있다",
-"좋은 자세는 좋은 에너지를 만든다",
-"호흡은 생명의 리듬이다",
-"나는 오늘도 나를 돌본다",
-"나는 나를 성장시킨다",
-"건강은 선택이다",
-"오늘의 운동이 내일의 활력이다",
-"나는 계속 전진한다",
-
-"지금 이 순간이 중요하다",
-"오늘의 선택이 미래를 만든다",
-"나는 내 삶의 주인이다",
-"나는 계속 도전한다",
-"나는 끝까지 해낸다",
-"나는 매일 배우고 성장한다",
-"나는 오늘도 도전한다",
-"나는 나의 길을 걷는다",
-"나는 지금 살아있다",
-"나는 계속 나아간다"
-
-]
-
-/* =======================
-듀오링고 스타일 메시지
-======================= */
-
-const messages=[
-"🔥 한 번 더 도전해볼까요?",
-"💪 아직 힘이 남아 있어요",
-"🚀 계속 성장 중입니다",
-"⭐ 오늘 흐름이 좋아요",
-"🏋️ 다시 시작해볼까요?",
-"🎯 목표에 가까워졌어요",
-"🌱 습관이 만들어지고 있어요",
-"🔥 오늘 기록을 넘을까요?",
-"💡 집중력이 올라가고 있어요",
-"🏆 훌륭한 연습입니다",
-"🚴 계속 움직여 봅시다",
-"🌟 잘하고 있어요",
-"💪 조금만 더 해볼까요?",
-"🚀 다음 라운드 준비",
-"🎤 목소리가 좋아지고 있어요",
-"🔥 멈추기엔 아쉬워요",
-"🏁 다시 시작해요",
-"⭐ 훌륭한 집중입니다",
-"💥 포기하지 마세요",
-"🌱 또 한 번 도전!"
-]
-
-/* ======================= */
-
-let currentSentence=0
-let words=[]
-let totalWords=0
-
-const wordBank=document.getElementById('word-bank')
-const answerArea=document.getElementById('answer-area')
-const progressBar=document.getElementById('plank-progress-bar')
-const controlBtn=document.getElementById('control-btn')
-
-let progressInterval=null
-let width=0
-let isRunning=false
-
-const duration=60000
-const intervalTime=100
-
-function shuffle(array){
-return array.sort(()=>Math.random()-0.5)
-}
-
-function loadSentence(){
-
-answerArea.innerHTML=""
-wordBank.innerHTML=""
-
-const sentence=sentences[currentSentence]
-words=sentence.split(" ")
-totalWords=words.length
-
-shuffle([...words]).forEach((word,i)=>{
-
-const btn=document.createElement("button")
-btn.className="word-btn"
-btn.textContent=word
-
-wordBank.appendChild(btn)
-
-})
-
-}
-
-function selectWord(wordBtn){
-
-if(wordBtn.classList.contains("selected"))return
-
-wordBtn.classList.add("selected")
-
-const answerBtn=document.createElement("button")
-answerBtn.className="word-btn"
-answerBtn.textContent=wordBtn.textContent
-
-answerArea.appendChild(answerBtn)
-
-checkComplete()
-
-}
-
-function checkComplete(){
-
-const answerWords=answerArea.querySelectorAll(".word-btn")
-
-if(answerWords.length===totalWords){
-
-setTimeout(()=>{
-
-nextSentence()
-
-},500)
-
-}
-
-}
-
-function nextSentence(){
-
-currentSentence++
-
-if(currentSentence>=sentences.length){
-
-shuffle(sentences)
-currentSentence=0
-
-}
-
-loadSentence()
-
-}
-
-/* 타이머 */
-
-function startTimer(){
-
-isRunning=true
-controlBtn.textContent="일시정지"
-
-progressInterval=setInterval(()=>{
-
-width+=(intervalTime/duration)*100
-
-if(width>=100){
-
-width=100
-progressBar.style.width="100%"
-finishSession()
-
-}else{
-
-progressBar.style.width=width+"%"
-
-}
-
-},intervalTime)
-
-}
-
-function finishSession(){
-
-clearInterval(progressInterval)
-
-controlBtn.textContent=
-messages[Math.floor(Math.random()*messages.length)]
-
-isRunning=false
-
-}
-
-function pauseTimer(){
-
-clearInterval(progressInterval)
-controlBtn.textContent="시작"
-isRunning=false
-
-}
-
-/* 음성 인식 */
-
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
-
-if(SpeechRecognition){
-
-const recognition=new SpeechRecognition()
-
-recognition.lang="ko-KR"
-recognition.continuous=true
-
-controlBtn.addEventListener("click",()=>{
-
-if(!isRunning){
-
-width=0
-progressBar.style.width="0%"
-startTimer()
-recognition.start()
-
-}else{
-
-pauseTimer()
-recognition.stop()
-
-}
-
-})
-
-recognition.onresult=(event)=>{
-
-const transcript=
-event.results[event.results.length-1][0].transcript
-
-const recognizedWords=transcript.split(" ")
-
-recognizedWords.forEach(word=>{
-
-const clean=word.trim()
-
-const wordBtn=[...wordBank.querySelectorAll(".word-btn:not(.selected)")]
-.find(btn=>btn.textContent===clean)
-
-if(wordBtn){
-selectWord(wordBtn)
-}
-
-})
-
-}
-
-}
-
-loadSentence()
-
-</script>
-
+    <div class="app">
+        <div class="exercise-header">
+            <span class="close-btn">✕</span>
+            <div class="progress-bar-container"><div class="progress-bar" id="progress"></div></div>
+        </div>
+
+        <h1 class="exercise-title">들은 내용을 탭하세요</h1>
+
+        <div class="main-content">
+            <div class="prompt-area">
+                <div class="speech-bubble-top" id="status-text">준비되셨나요?</div>
+                <img src="https://cdn-icons-png.flaticon.com/512/8022/8022515.png" alt="Mascot" class="mascot" id="mascot">
+            </div>
+
+            <div class="answer-area" id="answer-area"></div>
+            <div class="word-bank" id="word-bank"></div>
+        </div>
+
+        <div class="footer">
+            <button class="control-btn" id="mic-btn">음성으로 시작하기</button>
+        </div>
+
+        <div class="navbar">
+            <div class="nav-item">🏠</div>
+            <div class="nav-item active">🏋️</div>
+            <div class="nav-item">📈</div>
+        </div>
+    </div>
+
+    <script>
+        const sentences = [
+            "나는 매일 더 나은 목소리를 만든다",
+            "자신감 있는 말투가 기회를 부른다",
+            "오늘도 즐겁게 스피치 연습을 한다",
+            "천천히 또박또박 말하는 습관을 기르자"
+        ];
+        
+        let currentIdx = 0;
+        let targetWords = [];
+        let completedWords = 0;
+
+        const wordBank = document.getElementById('word-bank');
+        const answerArea = document.getElementById('answer-area');
+        const micBtn = document.getElementById('mic-btn');
+        const statusText = document.getElementById('status-text');
+        const mascot = document.getElementById('mascot');
+        const progressBar = document.getElementById('progress');
+
+        function initLevel() {
+            answerArea.innerHTML = '';
+            wordBank.innerHTML = '';
+            completedWords = 0;
+            const sentence = sentences[currentIdx];
+            targetWords = sentence.split(' ');
+            
+            // 프로그레스 바 업데이트
+            progressBar.style.width = `${(currentIdx / sentences.length) * 100}%`;
+            statusText.textContent = `문장 ${currentIdx + 1}/${sentences.length} 도전!`;
+
+            // 단어 섞기
+            const shuffled = [...targetWords].sort(() => Math.random() - 0.5);
+            shuffled.forEach((word, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'word-btn';
+                btn.textContent = word;
+                btn.dataset.index = i;
+                btn.onclick = () => handleWordSelection(word, btn);
+                wordBank.appendChild(btn);
+            });
+        }
+
+        function handleWordSelection(word, btn) {
+            // 정답 순서 체크 (순서대로 채우기)
+            if (word === targetWords[completedWords]) {
+                animateWord(btn);
+            } else {
+                // 틀렸을 때 흔들리는 효과
+                btn.style.animation = 'shake 0.3s';
+                setTimeout(() => btn.style.animation = '', 300);
+            }
+        }
+
+        function animateWord(originalBtn) {
+            const rect = originalBtn.getBoundingClientRect();
+            
+            // 복제본 생성 (날아가는 효과용)
+            const flyer = originalBtn.cloneNode(true);
+            flyer.classList.add('flying-word');
+            flyer.style.left = rect.left + 'px';
+            flyer.style.top = rect.top + 'px';
+            flyer.style.width = rect.width + 'px';
+            document.body.appendChild(flyer);
+
+            // 원본 숨기기
+            originalBtn.classList.add('selected');
+
+            // 목적지 계산용 임시 요소
+            const targetPlaceholder = document.createElement('div');
+            targetPlaceholder.className = 'word-btn';
+            targetPlaceholder.style.visibility = 'hidden';
+            targetPlaceholder.textContent = originalBtn.textContent;
+            answerArea.appendChild(targetPlaceholder);
+            
+            const targetRect = targetPlaceholder.getBoundingClientRect();
+
+            // 애니메이션 실행
+            requestAnimationFrame(() => {
+                flyer.style.left = targetRect.left + 'px';
+                flyer.style.top = targetRect.top + 'px';
+            });
+
+            setTimeout(() => {
+                document.body.removeChild(flyer);
+                targetPlaceholder.style.visibility = 'visible';
+                completedWords++;
+                checkCompletion();
+            }, 400);
+        }
+
+        function checkCompletion() {
+            if (completedWords === targetWords.length) {
+                statusText.textContent = "완벽해요! 다음으로 넘어갑니다.";
+                progressBar.style.width = `${((currentIdx + 1) / sentences.length) * 100}%`;
+                
+                setTimeout(() => {
+                    currentIdx = (currentIdx + 1) % sentences.length;
+                    initLevel();
+                }, 1500);
+            }
+        }
+
+        // --- 음성 인식 설정 ---
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'ko-KR';
+            recognition.continuous = true;
+
+            micBtn.addEventListener('click', () => {
+                if (micBtn.textContent.includes('시작')) {
+                    recognition.start();
+                    micBtn.textContent = '그만하기';
+                    micBtn.style.background = '#f44336';
+                } else {
+                    recognition.stop();
+                    micBtn.textContent = '음성으로 시작하기';
+                    micBtn.style.background = '#1f3f9c';
+                }
+            });
+
+            recognition.onstart = () => {
+                statusText.textContent = "듣고 있어요! 문장을 읽어주세요.";
+                mascot.classList.add('speaking');
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[event.results.length - 1][0].transcript;
+                const spokenWords = transcript.replace(/[.,!?;]/g, '').split(' ');
+
+                spokenWords.forEach(word => {
+                    const availableBtns = Array.from(wordBank.querySelectorAll('.word-btn:not(.selected)'));
+                    const targetBtn = availableBtns.find(btn => btn.textContent === word);
+                    
+                    if (targetBtn && word === targetWords[completedWords]) {
+                        handleWordSelection(word, targetBtn);
+                    }
+                });
+            };
+
+            recognition.onend = () => {
+                mascot.classList.remove('speaking');
+            };
+        }
+
+        // 초기 실행
+        initLevel();
+    </script>
+
+    <style>
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
 </body>
 </html>
