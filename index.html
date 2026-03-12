@@ -252,13 +252,88 @@ pointer-events:none;
 </div>
 
 <script>
+/* =========================
+문장 생성 엔진
+========================= */
 
-const sentences=[
-"나는 매일 더 나은 목소리를 만든다",
-"플랭크는 목소리를 강하게 만든다",
-"나는 오늘도 발성을 연습한다",
-"호흡은 좋은 목소리의 시작이다"
-];
+const subjects = [
+"나는","우리는","지금","오늘","플랭크는","목소리는",
+"호흡은","습관은","몸은","마음은"
+]
+
+const verbs = [
+"만든다","강하게 한다","바꾼다","성장시킨다","단련한다",
+"훈련한다","단단하게 만든다","깨운다","확장시킨다"
+]
+
+const objects = [
+"목소리를","몸을","정신을","습관을","건강을",
+"집중력을","자신감을","마음을"
+]
+
+const extras = [
+"매일","조금씩","꾸준히","지금 이 순간","오늘도",
+"포기하지 않고","차분하게","깊은 호흡으로"
+]
+
+function generateSentences(count=1000){
+
+const results=[]
+
+while(results.length<count){
+
+const s=
+subjects[Math.floor(Math.random()*subjects.length)]+" "+
+extras[Math.floor(Math.random()*extras.length)]+" "+
+objects[Math.floor(Math.random()*objects.length)]+" "+
+verbs[Math.floor(Math.random()*verbs.length)]
+
+results.push(s)
+
+}
+
+return results
+
+}
+
+let sentences = generateSentences(1000)
+
+/* =========================
+듀오링고 스타일 메시지
+========================= */
+
+const motivationalMessages=[
+
+"🔥 오늘도 한 판 더!",
+"💪 멈추기엔 너무 잘하고 있어요",
+"🚀 계속 가볼까요?",
+"🌱 습관이 만들어지고 있어요",
+"🏋️ 한 번 더 하면 레벨업!",
+"⭐ 지금 흐름 좋아요",
+"🎯 목표에 가까워졌어요",
+"🔥 오늘 기록을 깨볼까요?",
+"💡 집중력이 살아났어요",
+"🏆 챔피언 모드 가동",
+"🌟 오늘의 플랭크 영웅",
+"🚴 몸과 목소리가 깨어나요",
+"💥 포기하지 않는 힘",
+"🧠 몸과 뇌가 연결되고 있어요",
+"🎤 목소리가 강해지고 있어요",
+"📈 성장 중입니다",
+"🔥 지금이 바로 기회",
+"💪 당신은 생각보다 강합니다",
+"🚀 다음 문장 도전!",
+"🏁 마지막이 아닙니다 시작입니다"
+
+]
+
+function randomMessage(){
+return motivationalMessages[Math.floor(Math.random()*motivationalMessages.length)]
+}
+
+/* =========================
+기존 시스템
+========================= */
 
 let currentSentence=0
 let words=[]
@@ -277,6 +352,7 @@ const duration=60*1000
 const intervalTime=100
 
 function startTimer(){
+
 isRunning=true
 controlBtn.textContent='일시정지'
 
@@ -285,11 +361,15 @@ progressInterval=setInterval(()=>{
 width+=(intervalTime/duration)*100
 
 if(width>=100){
+
 width=100
 progressBar.style.width=width+'%'
-pauseTimer()
+finishSession()
+
 }else{
+
 progressBar.style.width=width+'%'
+
 }
 
 },intervalTime)
@@ -297,10 +377,53 @@ progressBar.style.width=width+'%'
 }
 
 function pauseTimer(){
+
 isRunning=false
 controlBtn.textContent='시작'
 clearInterval(progressInterval)
+
 }
+
+/* =========================
+1분 완료 화면
+========================= */
+
+function finishSession(){
+
+clearInterval(progressInterval)
+
+controlBtn.textContent=randomMessage()
+
+controlBtn.onclick=()=>{
+
+restartSession()
+
+}
+
+}
+
+/* =========================
+세션 재시작
+========================= */
+
+function restartSession(){
+
+width=0
+progressBar.style.width="0%"
+
+sentences=generateSentences(1000)
+
+currentSentence=0
+
+loadSentence()
+
+startTimer()
+
+}
+
+/* =========================
+문장 로딩
+========================= */
 
 function loadSentence(){
 
@@ -308,6 +431,7 @@ answerArea.innerHTML=''
 wordBank.innerHTML=''
 
 const sentence=sentences[currentSentence]
+
 words=sentence.split(' ')
 totalWords=words.length
 
@@ -327,6 +451,10 @@ wordBank.appendChild(btn)
 
 }
 
+/* =========================
+단어 선택
+========================= */
+
 function selectWord(wordBtn){
 
 if(wordBtn.classList.contains('selected')) return
@@ -343,6 +471,10 @@ answerArea.appendChild(answerBtn)
 checkComplete()
 
 }
+
+/* =========================
+문장 완료
+========================= */
 
 function checkComplete(){
 
@@ -365,12 +497,20 @@ function nextSentence(){
 currentSentence++
 
 if(currentSentence>=sentences.length){
+
+sentences=generateSentences(1000)
+
 currentSentence=0
+
 }
 
 loadSentence()
 
 }
+
+/* =========================
+음성 인식
+========================= */
 
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
 
@@ -385,11 +525,15 @@ recognition.interimResults=false
 controlBtn.addEventListener('click',()=>{
 
 if(!isRunning){
+
 startTimer()
 recognition.start()
+
 }else{
+
 pauseTimer()
 recognition.stop()
+
 }
 
 })
@@ -407,7 +551,9 @@ const wordBtn=[...wordBank.querySelectorAll('.word-btn:not(.selected)')]
 .find(btn=>btn.textContent===clean)
 
 if(wordBtn){
+
 selectWord(wordBtn)
+
 }
 
 })
@@ -415,6 +561,8 @@ selectWord(wordBtn)
 }
 
 }
+
+/* 시작 */
 
 loadSentence()
 
