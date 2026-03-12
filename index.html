@@ -81,6 +81,7 @@ body {
     align-items: center;
     justify-content: center; 
     margin-bottom: 20px; /* Reduced space below mascot */
+    position: relative;
 }
 
 .mascot {
@@ -93,6 +94,41 @@ body {
     border: 2px solid #eee;
     border-radius: 12px;
     padding: 5px;
+}
+
+.speech-bubble-top {
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f3f9c; /* Using a theme color */
+    color: white;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    z-index: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+.speech-bubble-top:hover {
+    transform: translateX(-50%) translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.speech-bubble-top::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 10px solid #1f3f9c; /* Match background */
 }
 
 .sound-btn {
@@ -239,6 +275,9 @@ body {
 
     <div class="main-content">
         <div class="prompt-area">
+            <div class="speech-bubble-top">
+                <span>하드모드에 도전할</span>
+            </div>
             <img src="/img/mascot.png" alt="Mascot" class="mascot"/>
             <div class="speech-bubble">
                 <span class="sound-btn">🔊</span>
