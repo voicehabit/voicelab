@@ -320,159 +320,201 @@ body {
 </div>
 
 <script>
-// --- Progress Bar Logic ---
-const progressBar = document.getElementById('plank-progress-bar');
-const controlBtn = document.getElementById('control-btn');
 
-let progressInterval = null;
-let isRunning = false;
-let width = 0;
-const duration = 60 * 1000; // 1 minute in milliseconds
-const intervalTime = 100; // update every 100ms
+// ----------------------
+// Sentence System
+// ----------------------
 
-function startTimer() {
-    isRunning = true;
-    controlBtn.textContent = '일시정지';
+const sentences = [
+"나는 매일 더 나은 목소리를 만든다",
+"플랭크는 목소리를 강하게 만든다",
+"나는 오늘도 발성을 연습한다",
+"호흡은 좋은 목소리의 시작이다"
+];
 
-    progressInterval = setInterval(() => {
-        width += (intervalTime / duration) * 100;
-        if (width >= 100) {
-            width = 100;
-            progressBar.style.width = width + '%';
-            pauseTimer();
-            controlBtn.textContent = '완료';
-            controlBtn.disabled = true;
-        } else {
-            progressBar.style.width = width + '%';
-        }
-    }, intervalTime);
-}
+let currentSentenceIndex = 0;
+let words = [];
+let totalWords = 0;
 
-function pauseTimer() {
-    isRunning = false;
-    if (width < 100) {
-       controlBtn.textContent = '시작';
-    }
-    clearInterval(progressInterval);
-}
 
-// --- Word Selection Logic ---
-const sentence = "나는 매일 더 나은 목소리를 만든다";
-const words = sentence.split(' ');
+// ----------------------
+// UI Elements
+// ----------------------
+
 const wordBank = document.getElementById('word-bank');
 const answerArea = document.getElementById('answer-area');
 
-function selectWord(wordBtn) {
-    // A word can only be selected once
-    if (wordBtn.classList.contains('selected')) {
-        return;
-    }
 
-    wordBtn.classList.add('selected');
+// ----------------------
+// Sentence Loader
+// ----------------------
 
-    const answerBtn = document.createElement('button');
-    answerBtn.className = 'word-btn';
-    answerBtn.textContent = wordBtn.textContent;
-    // Store the ID of the original button to link them
-    answerBtn.dataset.originalId = wordBtn.dataset.id;
-    
-    if (answerArea) {
-        answerArea.appendChild(answerBtn);
-    }
+function loadSentence() {
 
-    // Add event listener to the new button in the answer area to allow deselecting
-    answerBtn.addEventListener('click', () => deselectWord(answerBtn));
-}
+    answerArea.innerHTML = "";
+    wordBank.innerHTML = "";
 
-function deselectWord(answerBtn) {
-    const originalWordBtn = wordBank ? wordBank.querySelector(`[data-id="${answerBtn.dataset.originalId}"]`) : null;
-    if (originalWordBtn) {
-        originalWordBtn.classList.remove('selected');
-    }
-    if (answerArea) {
-        answerArea.removeChild(answerBtn);
-    }
-}
+    const sentence = sentences[currentSentenceIndex];
+    words = sentence.split(" ");
+    totalWords = words.length;
 
-if (wordBank) {
-    // Create a shuffled list of words for the word bank
     const shuffledWords = [...words].sort(() => Math.random() - 0.5);
 
     shuffledWords.forEach((word, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'word-btn';
+
+        const btn = document.createElement("button");
+
+        btn.className = "word-btn";
         btn.textContent = word;
-        // Assign a unique ID to each button
         btn.dataset.id = `word-${index}`;
+
+        btn.addEventListener("click", () => selectWord(btn));
+
         wordBank.appendChild(btn);
 
-        btn.addEventListener('click', () => selectWord(btn));
     });
+
 }
 
-// --- Control Button & Speech Recognition Logic ---
+
+// ----------------------
+// Select Word
+// ----------------------
+
+function selectWord(wordBtn){
+
+    if(wordBtn.classList.contains("selected")) return;
+
+    wordBtn.classList.add("selected");
+
+    const answerBtn = document.createElement("button");
+
+    answerBtn.className = "word-btn answer-word";
+    answerBtn.textContent = wordBtn.textContent;
+    answerBtn.dataset.originalId = wordBtn.dataset.id;
+
+    answerArea.appendChild(answerBtn);
+
+    // animation
+    setTimeout(()=>{
+        answerBtn.classList.add("move-up");
+    },10);
+
+
+    answerBtn.addEventListener("click", ()=>deselectWord(answerBtn));
+
+    checkSentenceComplete();
+}
+
+
+// ----------------------
+// Deselect
+// ----------------------
+
+function deselectWord(answerBtn){
+
+    const originalBtn = wordBank.querySelector(`[data-id="${answerBtn.dataset.originalId}"]`);
+
+    if(originalBtn){
+        originalBtn.classList.remove("selected");
+    }
+
+    answerBtn.remove();
+
+}
+
+
+// ----------------------
+// Check sentence completion
+// ----------------------
+
+function checkSentenceComplete(){
+
+    const answerWords = answerArea.querySelectorAll(".answer-word");
+
+    if(answerWords.length === totalWords){
+
+        setTimeout(()=>{
+
+            nextSentence();
+
+        },800);
+
+    }
+
+}
+
+
+// ----------------------
+// Next sentence
+// ----------------------
+
+function nextSentence(){
+
+    currentSentenceIndex++;
+
+    if(currentSentenceIndex >= sentences.length){
+
+        currentSentenceIndex = 0;
+
+    }
+
+    loadSentence();
+
+}
+
+
+
+// ----------------------
+// Init
+// ----------------------
+
+loadSentence();
+
+
+// ----------------------
+// Speech Recognition
+// ----------------------
+
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if (SpeechRecognition && controlBtn) {
+if (SpeechRecognition) {
+
     const recognition = new SpeechRecognition();
+
     recognition.lang = 'ko-KR';
+
     recognition.continuous = false;
+
     recognition.interimResults = false;
+
+    const controlBtn = document.getElementById("control-btn");
 
     controlBtn.textContent = "음성으로 답하기";
 
-    controlBtn.addEventListener('click', () => {
-        if (!isRunning) {
-            startTimer(); // Start the timer only on the first click
-        }
-        recognition.start();
-    });
+    controlBtn.onclick = ()=>recognition.start();
 
-    recognition.onstart = () => {
-        controlBtn.textContent = '듣고 있어요...';
-        controlBtn.disabled = true;
-    };
+    recognition.onresult = (event)=>{
 
-    recognition.onresult = (event) => {
         const transcript = event.results[0][0].transcript;
-        const recognizedWords = transcript.split(' ');
+
+        const recognizedWords = transcript.split(" ");
 
         recognizedWords.forEach(recWord => {
-            const cleanRecWord = recWord.replace(/[.,!?;]/g, '').trim();
-            const wordBtn = Array.from(wordBank.querySelectorAll('.word-btn:not(.selected)'))
-                                 .find(btn => btn.textContent === cleanRecWord);
-            if (wordBtn) {
+
+            const clean = recWord.replace(/[.,!?;]/g,"").trim();
+
+            const wordBtn = Array.from(wordBank.querySelectorAll(".word-btn:not(.selected)"))
+                .find(btn => btn.textContent === clean);
+
+            if(wordBtn){
                 selectWord(wordBtn);
             }
+
         });
+
     };
 
-    recognition.onerror = (event) => {
-        console.error("Speech recognition error", event.error);
-        if (event.error === 'no-speech') {
-            alert("음성을 인식하지 못했습니다. 다시 시도해 주세요.");
-        }
-    };
-
-    recognition.onend = () => {
-        if (width < 100) {
-            controlBtn.textContent = "음성으로 답하기";
-            controlBtn.disabled = false;
-        }
-    };
-
-} else {
-    // Fallback for browsers without Speech Recognition
-    console.log("Speech Recognition not supported. Falling back to manual controls.");
-    if (controlBtn && progressBar) {
-        controlBtn.addEventListener('click', () => {
-            if (!isRunning) {
-                startTimer();
-            } else {
-                pauseTimer();
-            }
-        });
-    }
 }
 
 </script>
