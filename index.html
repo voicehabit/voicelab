@@ -356,16 +356,6 @@ function pauseTimer() {
     clearInterval(progressInterval);
 }
 
-if (controlBtn && progressBar) {
-    controlBtn.addEventListener('click', () => {
-        if (!isRunning) {
-            startTimer();
-        } else {
-            pauseTimer();
-        }
-    });
-}
-
 // --- Word Selection Logic ---
 const sentence = "나는 매일 더 나은 목소리를 만든다";
 const words = sentence.split(' ');
@@ -418,6 +408,71 @@ if (wordBank) {
 
         btn.addEventListener('click', () => selectWord(btn));
     });
+}
+
+// --- Control Button & Speech Recognition Logic ---
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition && controlBtn) {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'ko-KR';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    controlBtn.textContent = "음성으로 답하기";
+
+    controlBtn.addEventListener('click', () => {
+        if (!isRunning) {
+            startTimer(); // Start the timer only on the first click
+        }
+        recognition.start();
+    });
+
+    recognition.onstart = () => {
+        controlBtn.textContent = '듣고 있어요...';
+        controlBtn.disabled = true;
+    };
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        const recognizedWords = transcript.split(' ');
+
+        recognizedWords.forEach(recWord => {
+            const cleanRecWord = recWord.replace(/[.,!?;]/g, '').trim();
+            const wordBtn = Array.from(wordBank.querySelectorAll('.word-btn:not(.selected)'))
+                                 .find(btn => btn.textContent === cleanRecWord);
+            if (wordBtn) {
+                selectWord(wordBtn);
+            }
+        });
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Speech recognition error", event.error);
+        if (event.error === 'no-speech') {
+            alert("음성을 인식하지 못했습니다. 다시 시도해 주세요.");
+        }
+    };
+
+    recognition.onend = () => {
+        if (width < 100) {
+            controlBtn.textContent = "음성으로 답하기";
+            controlBtn.disabled = false;
+        }
+    };
+
+} else {
+    // Fallback for browsers without Speech Recognition
+    console.log("Speech Recognition not supported. Falling back to manual controls.");
+    if (controlBtn && progressBar) {
+        controlBtn.addEventListener('click', () => {
+            if (!isRunning) {
+                startTimer();
+            } else {
+                pauseTimer();
+            }
+        });
+    }
 }
 
 </script>
