@@ -60,7 +60,7 @@ body {
     height: 100%;
     background: linear-gradient(90deg, #ffc800, #ff9800);
     border-radius: 8px;
-    transition: width 0.1s linear; /* Smooth transition */
+    transition: width 1s linear; /* Smooth transition */
 }
 
 /* Title */
@@ -150,6 +150,7 @@ body {
     gap: 10px;
     padding-bottom: 10px;
     margin-bottom: 30px;
+    position: relative;
 }
 
 .word-bank {
@@ -177,7 +178,6 @@ body {
     background-color: #f7f7f7;
 }
 
-/* Placeholder for selected words */
 .word-btn.selected {
     background-color: #eee;
     border-color: #eee;
@@ -185,6 +185,12 @@ body {
     box-shadow: none;
     cursor: default;
 }
+
+.word-btn.answer-word {
+    position: absolute;
+    transition: top 0.5s ease-out, left 0.5s ease-out;
+}
+
 
 /* Footer (Confirm Button Area) */
 .footer {
@@ -338,37 +344,178 @@ let totalWords = 0;
 
 
 // ----------------------
-// UI Elements
+// UI
 // ----------------------
 
 const wordBank = document.getElementById('word-bank');
 const answerArea = document.getElementById('answer-area');
+const progressBar = document.getElementById('plank-progress-bar');
+const controlBtn = document.getElementById('control-btn');
+
+
+// ----------------------
+// Timer
+// ----------------------
+
+let duration = 60;
+let time = 0;
+let timerInterval = null;
+let isRunning = false;
+
+function startTimer(){
+
+    timerInterval = setInterval(()=>{
+
+        time++;
+
+        const percent = (time / duration) * 100;
+
+        progressBar.style.width = percent + "%";
+
+        if(time >= duration){
+            stopAll();
+        }
+
+    },1000);
+
+}
+
+function pauseTimer(){
+
+    clearInterval(timerInterval);
+
+}
+
+
+// ----------------------
+// Speech Recognition
+// ----------------------
+
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+let recognition = null;
+
+if(SpeechRecognition){
+
+    recognition = new SpeechRecognition();
+
+    recognition.lang = "ko-KR";
+
+    recognition.continuous = true;
+
+    recognition.interimResults = true;
+
+
+    recognition.onresult = (event)=>{
+
+        const result = event.results[event.results.length - 1][0].transcript;
+
+        const recognizedWords = result.split(" ");
+
+        recognizedWords.forEach(word=>{
+
+            const clean = word.replace(/[.,!?;]/g,"").trim();
+
+            const wordBtn = Array.from(wordBank.querySelectorAll(".word-btn:not(.selected)"))
+            .find(btn => btn.textContent === clean);
+
+            if(wordBtn){
+                selectWord(wordBtn);
+            }
+
+        });
+
+    };
+
+}
+
+
+// ----------------------
+// Button Logic
+// ----------------------
+
+controlBtn.textContent = "시작";
+
+controlBtn.addEventListener("click", ()=>{
+
+    if(!isRunning){
+
+        startAll();
+
+    }else{
+
+        pauseAll();
+
+    }
+
+});
+
+
+function startAll(){
+
+    isRunning = true;
+
+    controlBtn.textContent = "일시정지";
+
+    startTimer();
+
+    if(recognition) recognition.start();
+
+}
+
+function pauseAll(){
+
+    isRunning = false;
+
+    controlBtn.textContent = "시작";
+
+    pauseTimer();
+
+    if(recognition) recognition.stop();
+
+}
+
+function stopAll(){
+
+    pauseTimer();
+
+    if(recognition) recognition.stop();
+
+    controlBtn.textContent = "완료";
+
+    controlBtn.disabled = true;
+
+}
 
 
 // ----------------------
 // Sentence Loader
 // ----------------------
 
-function loadSentence() {
+function loadSentence(){
 
     answerArea.innerHTML = "";
     wordBank.innerHTML = "";
 
     const sentence = sentences[currentSentenceIndex];
+
     words = sentence.split(" ");
+
     totalWords = words.length;
 
-    const shuffledWords = [...words].sort(() => Math.random() - 0.5);
+    const shuffled = [...words].sort(()=>Math.random()-0.5);
 
-    shuffledWords.forEach((word, index) => {
+    shuffled.forEach((word,index)=>{
 
         const btn = document.createElement("button");
 
         btn.className = "word-btn";
-        btn.textContent = word;
-        btn.dataset.id = `word-${index}`;
 
-        btn.addEventListener("click", () => selectWord(btn));
+        btn.textContent = word;
+
+        btn.dataset.id = index;
+
+        btn.addEventListener("click",()=>selectWord(btn));
 
         wordBank.appendChild(btn);
 
@@ -390,20 +537,23 @@ function selectWord(wordBtn){
     const answerBtn = document.createElement("button");
 
     answerBtn.className = "word-btn answer-word";
+
     answerBtn.textContent = wordBtn.textContent;
+
     answerBtn.dataset.originalId = wordBtn.dataset.id;
 
     answerArea.appendChild(answerBtn);
 
-    // animation
     setTimeout(()=>{
+
         answerBtn.classList.add("move-up");
+
     },10);
 
+    answerBtn.addEventListener("click",()=>deselectWord(answerBtn));
 
-    answerBtn.addEventListener("click", ()=>deselectWord(answerBtn));
+    checkComplete();
 
-    checkSentenceComplete();
 }
 
 
@@ -413,11 +563,9 @@ function selectWord(wordBtn){
 
 function deselectWord(answerBtn){
 
-    const originalBtn = wordBank.querySelector(`[data-id="${answerBtn.dataset.originalId}"]`);
+    const original = wordBank.querySelector(`[data-id="${answerBtn.dataset.originalId}"]`);
 
-    if(originalBtn){
-        originalBtn.classList.remove("selected");
-    }
+    if(original) original.classList.remove("selected");
 
     answerBtn.remove();
 
@@ -425,10 +573,10 @@ function deselectWord(answerBtn){
 
 
 // ----------------------
-// Check sentence completion
+// Check sentence complete
 // ----------------------
 
-function checkSentenceComplete(){
+function checkComplete(){
 
     const answerWords = answerArea.querySelectorAll(".answer-word");
 
@@ -438,7 +586,7 @@ function checkSentenceComplete(){
 
             nextSentence();
 
-        },800);
+        },700);
 
     }
 
@@ -446,7 +594,7 @@ function checkSentenceComplete(){
 
 
 // ----------------------
-// Next sentence
+// Next Sentence
 // ----------------------
 
 function nextSentence(){
@@ -464,58 +612,11 @@ function nextSentence(){
 }
 
 
-
 // ----------------------
 // Init
 // ----------------------
 
 loadSentence();
-
-
-// ----------------------
-// Speech Recognition
-// ----------------------
-
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-if (SpeechRecognition) {
-
-    const recognition = new SpeechRecognition();
-
-    recognition.lang = 'ko-KR';
-
-    recognition.continuous = false;
-
-    recognition.interimResults = false;
-
-    const controlBtn = document.getElementById("control-btn");
-
-    controlBtn.textContent = "음성으로 답하기";
-
-    controlBtn.onclick = ()=>recognition.start();
-
-    recognition.onresult = (event)=>{
-
-        const transcript = event.results[0][0].transcript;
-
-        const recognizedWords = transcript.split(" ");
-
-        recognizedWords.forEach(recWord => {
-
-            const clean = recWord.replace(/[.,!?;]/g,"").trim();
-
-            const wordBtn = Array.from(wordBank.querySelectorAll(".word-btn:not(.selected)"))
-                .find(btn => btn.textContent === clean);
-
-            if(wordBtn){
-                selectWord(wordBtn);
-            }
-
-        });
-
-    };
-
-}
 
 </script>
 
