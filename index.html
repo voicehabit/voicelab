@@ -223,15 +223,15 @@ pointer-events:none;
 <span class="timer-label-end">1분</span>
 </div>
 
-<h1 class="exercise-title">플랭크 할 준비 됐나요?</h1>
+<h1 class="exercise-title">플랭크 하면서 문장을 읽어요!</h1>
 
 <div class="main-content">
 
 <div class="prompt-area">
 <img src="/img/mascot.png" class="mascot"/>
 <div class="speech-bubble">
-<span class="sound-btn">고고고고고!</span>
-<span class="sound-btn slow">멈추지 않아요</span>
+<span class="sound-btn">🔊</span>
+<span class="sound-btn slow">🐢</span>
 </div>
 </div>
 
@@ -401,34 +401,34 @@ controlBtn.textContent='시작';
 }
 
 function resetGame() {
-    width = 0;
-    progressBar.style.width = '0%';
-    loadSentence();
+width = 0;
+progressBar.style.width = '0%';
+currentSentence = 0;
+loadSentence();
 }
 
 function loadSentence(){
 
-    answerArea.innerHTML=''
-    wordBank.innerHTML=''
+answerArea.innerHTML=''
+wordBank.innerHTML=''
 
-    currentSentence = Math.floor(Math.random() * sentences.length);
-    const sentence=sentences[currentSentence]
-    words=sentence.split(' ')
-    totalWords=words.length
+const sentence=sentences[currentSentence]
+words=sentence.split(' ')
+totalWords=words.length
 
-    const shuffled=[...words].sort(()=>Math.random()-0.5)
+const shuffled=[...words].sort(()=>Math.random()-0.5)
 
-    shuffled.forEach((word,i)=>{
+shuffled.forEach((word,i)=>{
 
-    const btn=document.createElement('button')
+const btn=document.createElement('button')
 
-    btn.className='word-btn'
-    btn.textContent=word
-    btn.dataset.id=i
+btn.className='word-btn'
+btn.textContent=word
+btn.dataset.id=i
 
-    wordBank.appendChild(btn)
+wordBank.appendChild(btn)
 
-    })
+})
 
 }
 
@@ -466,7 +466,15 @@ nextSentence()
 }
 
 function nextSentence(){
-    loadSentence();
+
+currentSentence++
+
+if(currentSentence>=sentences.length){
+currentSentence=0
+}
+
+loadSentence()
+
 }
 
 const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
