@@ -1,243 +1,371 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>스마트 보이스 트레이닝</title>
-    <style>
-        body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f7f7f7; color: #4c4c4c; overflow: hidden; }
-        .app { max-width: 420px; margin: 0 auto; display: flex; flex-direction: column; height: 100vh; padding: 0 15px 160px; box-sizing: border-box; background: white; position: relative; }
-        
-        /* Header */
-        .exercise-header { padding: 15px 0; display: flex; align-items: center; gap: 10px; }
-        .close-btn { font-size: 24px; color: #ccc; cursor: pointer; }
-        .progress-bar-container { flex-grow: 1; height: 12px; background: #eee; border-radius: 6px; overflow: hidden; }
-        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #4CAF50, #8BC34A); transition: width 0.3s; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>들은 내용을 탭하세요</title>
 
-        .exercise-title { font-size: 22px; font-weight: bold; margin: 10px 0; }
+<style>
 
-        /* Main Content */
-        .main-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .prompt-area { display: flex; align-items: center; justify-content: center; margin-bottom: 30px; position: relative; padding-top: 40px; }
-        .mascot { width: 120px; transition: transform 0.3s; }
-        .mascot.speaking { transform: scale(1.1); }
+body{
+margin:0;
+font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+background:#f7f7f7;
+color:#4c4c4c;
+}
 
-        .speech-bubble-top { position: absolute; top: 0; background: #1f3f9c; color: white; padding: 8px 15px; border-radius: 12px; font-weight: bold; font-size: 14px; }
-        .speech-bubble-top::after { content: ''; position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); border-top: 8px solid #1f3f9c; border-left: 8px solid transparent; border-right: 8px solid transparent; }
+.app{
+max-width:420px;
+margin:0 auto;
+display:flex;
+flex-direction:column;
+height:100vh;
+padding:0 15px 160px;
+box-sizing:border-box;
+background:white;
+}
 
-        /* Answer & Word Bank */
-        .answer-area { border-bottom: 2px solid #eee; min-height: 120px; display: flex; flex-wrap: wrap; align-content: flex-start; gap: 8px; padding: 10px; margin-bottom: 20px; background: #fafafa; border-radius: 12px; }
-        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; min-height: 150px; }
+.exercise-header{
+padding:15px 0;
+display:flex;
+align-items:center;
+gap:10px;
+}
 
-        /* Button Styles */
-        .word-btn { 
-            background: white; border: 2px solid #eee; border-radius: 12px; padding: 12px 18px; 
-            font-size: 16px; cursor: pointer; box-shadow: 0 3px 0 #ddd; transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            color: #4c4c4c; font-weight: bold; position: relative;
-        }
-        .word-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #ddd; }
-        .word-btn.selected { opacity: 0.3; pointer-events: none; transform: scale(0.9); }
-        
-        /* Animation Target */
-        .flying-word { position: fixed; z-index: 100; pointer-events: none; transition: all 0.4s ease-in-out; }
+.progress-bar-container{
+flex-grow:1;
+height:16px;
+background:#eee;
+border-radius:8px;
+overflow:hidden;
+}
 
-        /* Footer */
-        .footer { position: fixed; bottom: 60px; left: 0; right: 0; max-width: 420px; margin: 0 auto; padding: 15px; background: white; }
-        .control-btn { width: 100%; background: #1f3f9c; color: white; border: none; border-radius: 15px; padding: 18px; font-size: 18px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #152b6d; }
-        .control-btn:disabled { background: #ccc; box-shadow: 0 4px 0 #aaa; }
+.progress-bar{
+width:0%;
+height:100%;
+background:linear-gradient(90deg,#ffc800,#ff9800);
+transition:width .1s linear;
+}
 
-        .navbar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; max-width: 420px; margin: 0 auto; height: 60px; border-top: 1px solid #eee; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc; width: 33%; text-decoration: none; }
-        .nav-item.active { color: #1f3f9c; }
-    </style>
+.exercise-title{
+font-size:24px;
+font-weight:bold;
+margin:10px 0;
+}
+
+.main-content{
+flex-grow:1;
+overflow-y:auto;
+}
+
+.prompt-area{
+display:flex;
+align-items:center;
+justify-content:center;
+margin-bottom:20px;
+position:relative;
+}
+
+.mascot{
+width:160px;
+margin-right:8px;
+}
+
+.speech-bubble{
+display:flex;
+border:2px solid #eee;
+border-radius:12px;
+padding:5px;
+}
+
+.sound-btn{
+font-size:30px;
+padding:10px 15px;
+cursor:pointer;
+color:#1a8a7e;
+}
+
+.answer-area{
+border-bottom:2px solid #eee;
+min-height:50px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+padding-bottom:10px;
+margin-bottom:30px;
+}
+
+.word-bank{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:10px;
+padding-bottom:20px;
+}
+
+.word-btn{
+background:white;
+border:2px solid #eee;
+border-radius:12px;
+padding:10px 20px;
+font-size:18px;
+box-shadow:0 2px 0 #ddd;
+transition:all .25s ease;
+color:#4c4c4c;
+font-weight:500;
+}
+
+.word-btn.selected{
+opacity:0;
+transform:translateY(-40px);
+pointer-events:none;
+}
+
+.footer{
+position:fixed;
+bottom:60px;
+left:0;
+right:0;
+max-width:420px;
+margin:0 auto;
+background:white;
+padding:20px 15px 15px;
+box-sizing:border-box;
+text-align:center;
+}
+
+.control-btn{
+width:100%;
+background:#4CAF50;
+color:white;
+border:none;
+border-radius:12px;
+padding:15px;
+font-size:20px;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 4px 0 #388E3C;
+}
+
+.navbar{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+background:white;
+display:flex;
+justify-content:space-around;
+max-width:420px;
+margin:0 auto;
+border-top:1px solid #eee;
+}
+
+.nav-item{
+display:flex;
+flex-direction:column;
+align-items:center;
+font-size:24px;
+padding:10px 15px;
+color:#ccc;
+}
+
+.nav-item.active{
+color:#1f3f9c;
+}
+
+.nav-text{
+font-size:12px;
+}
+
+</style>
 </head>
+
 <body>
-    <div class="app">
-        <div class="exercise-header">
-            <span class="close-btn">✕</span>
-            <div class="progress-bar-container"><div class="progress-bar" id="progress"></div></div>
-        </div>
 
-        <h1 class="exercise-title">들은 내용을 탭하세요</h1>
+<div class="app">
 
-        <div class="main-content">
-            <div class="prompt-area">
-                <div class="speech-bubble-top" id="status-text">준비되셨나요?</div>
-                <img src="https://cdn-icons-png.flaticon.com/512/8022/8022515.png" alt="Mascot" class="mascot" id="mascot">
-            </div>
+<div class="exercise-header">
+<span>0분</span>
+<div class="progress-bar-container">
+<div class="progress-bar" id="plank-progress-bar"></div>
+</div>
+<span>1분</span>
+</div>
 
-            <div class="answer-area" id="answer-area"></div>
-            <div class="word-bank" id="word-bank"></div>
-        </div>
+<h1 class="exercise-title">플랭크를 하며 낱말을 읽어요</h1>
 
-        <div class="footer">
-            <button class="control-btn" id="mic-btn">음성으로 시작하기</button>
-        </div>
+<div class="main-content">
 
-        <div class="navbar">
-            <div class="nav-item">🏠</div>
-            <div class="nav-item active">🏋️</div>
-            <div class="nav-item">📈</div>
-        </div>
-    </div>
+<div class="prompt-area">
+<img src="/img/mascot.png" class="mascot">
+<div class="speech-bubble">
+<span class="sound-btn">🔊</span>
+<span class="sound-btn slow">🐢</span>
+</div>
+</div>
 
-    <script>
-        const sentences = [
-            "나는 매일 더 나은 목소리를 만든다",
-            "자신감 있는 말투가 기회를 부른다",
-            "오늘도 즐겁게 스피치 연습을 한다",
-            "천천히 또박또박 말하는 습관을 기르자"
-        ];
-        
-        let currentIdx = 0;
-        let targetWords = [];
-        let completedWords = 0;
+<div class="answer-area" id="answer-area"></div>
+<div class="word-bank" id="word-bank"></div>
 
-        const wordBank = document.getElementById('word-bank');
-        const answerArea = document.getElementById('answer-area');
-        const micBtn = document.getElementById('mic-btn');
-        const statusText = document.getElementById('status-text');
-        const mascot = document.getElementById('mascot');
-        const progressBar = document.getElementById('progress');
+</div>
+</div>
 
-        function initLevel() {
-            answerArea.innerHTML = '';
-            wordBank.innerHTML = '';
-            completedWords = 0;
-            const sentence = sentences[currentIdx];
-            targetWords = sentence.split(' ');
-            
-            // 프로그레스 바 업데이트
-            progressBar.style.width = `${(currentIdx / sentences.length) * 100}%`;
-            statusText.textContent = `문장 ${currentIdx + 1}/${sentences.length} 도전!`;
+<div class="footer">
+<button class="control-btn" id="control-btn">음성으로 시작</button>
+</div>
 
-            // 단어 섞기
-            const shuffled = [...targetWords].sort(() => Math.random() - 0.5);
-            shuffled.forEach((word, i) => {
-                const btn = document.createElement('button');
-                btn.className = 'word-btn';
-                btn.textContent = word;
-                btn.dataset.index = i;
-                btn.onclick = () => handleWordSelection(word, btn);
-                wordBank.appendChild(btn);
-            });
-        }
+<div class="navbar">
+<div class="nav-item">🏠<div class="nav-text">홈</div></div>
+<div class="nav-item active">🏋️<div class="nav-text">연습</div></div>
+<div class="nav-item">📈<div class="nav-text">기록</div></div>
+</div>
 
-        function handleWordSelection(word, btn) {
-            // 정답 순서 체크 (순서대로 채우기)
-            if (word === targetWords[completedWords]) {
-                animateWord(btn);
-            } else {
-                // 틀렸을 때 흔들리는 효과
-                btn.style.animation = 'shake 0.3s';
-                setTimeout(() => btn.style.animation = '', 300);
-            }
-        }
+<script>
 
-        function animateWord(originalBtn) {
-            const rect = originalBtn.getBoundingClientRect();
-            
-            // 복제본 생성 (날아가는 효과용)
-            const flyer = originalBtn.cloneNode(true);
-            flyer.classList.add('flying-word');
-            flyer.style.left = rect.left + 'px';
-            flyer.style.top = rect.top + 'px';
-            flyer.style.width = rect.width + 'px';
-            document.body.appendChild(flyer);
+/* 문장 리스트 */
 
-            // 원본 숨기기
-            originalBtn.classList.add('selected');
+const sentences=[
+"나는 매일 더 나은 목소리를 만든다",
+"플랭크는 목소리를 강하게 만든다",
+"나는 오늘도 발성을 연습한다",
+"호흡은 좋은 목소리의 시작이다"
+]
 
-            // 목적지 계산용 임시 요소
-            const targetPlaceholder = document.createElement('div');
-            targetPlaceholder.className = 'word-btn';
-            targetPlaceholder.style.visibility = 'hidden';
-            targetPlaceholder.textContent = originalBtn.textContent;
-            answerArea.appendChild(targetPlaceholder);
-            
-            const targetRect = targetPlaceholder.getBoundingClientRect();
+let currentSentence=0
+let words=[]
+let totalWords=0
 
-            // 애니메이션 실행
-            requestAnimationFrame(() => {
-                flyer.style.left = targetRect.left + 'px';
-                flyer.style.top = targetRect.top + 'px';
-            });
+const wordBank=document.getElementById("word-bank")
+const answerArea=document.getElementById("answer-area")
+const controlBtn=document.getElementById("control-btn")
 
-            setTimeout(() => {
-                document.body.removeChild(flyer);
-                targetPlaceholder.style.visibility = 'visible';
-                completedWords++;
-                checkCompletion();
-            }, 400);
-        }
+/* 문장 생성 */
 
-        function checkCompletion() {
-            if (completedWords === targetWords.length) {
-                statusText.textContent = "완벽해요! 다음으로 넘어갑니다.";
-                progressBar.style.width = `${((currentIdx + 1) / sentences.length) * 100}%`;
-                
-                setTimeout(() => {
-                    currentIdx = (currentIdx + 1) % sentences.length;
-                    initLevel();
-                }, 1500);
-            }
-        }
+function loadSentence(){
 
-        // --- 음성 인식 설정 ---
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (SpeechRecognition) {
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ko-KR';
-            recognition.continuous = true;
+answerArea.innerHTML=""
+wordBank.innerHTML=""
 
-            micBtn.addEventListener('click', () => {
-                if (micBtn.textContent.includes('시작')) {
-                    recognition.start();
-                    micBtn.textContent = '그만하기';
-                    micBtn.style.background = '#f44336';
-                } else {
-                    recognition.stop();
-                    micBtn.textContent = '음성으로 시작하기';
-                    micBtn.style.background = '#1f3f9c';
-                }
-            });
+const sentence=sentences[currentSentence]
 
-            recognition.onstart = () => {
-                statusText.textContent = "듣고 있어요! 문장을 읽어주세요.";
-                mascot.classList.add('speaking');
-            };
+words=sentence.split(" ")
+totalWords=words.length
 
-            recognition.onresult = (event) => {
-                const transcript = event.results[event.results.length - 1][0].transcript;
-                const spokenWords = transcript.replace(/[.,!?;]/g, '').split(' ');
+const shuffled=[...words].sort(()=>Math.random()-0.5)
 
-                spokenWords.forEach(word => {
-                    const availableBtns = Array.from(wordBank.querySelectorAll('.word-btn:not(.selected)'));
-                    const targetBtn = availableBtns.find(btn => btn.textContent === word);
-                    
-                    if (targetBtn && word === targetWords[completedWords]) {
-                        handleWordSelection(word, targetBtn);
-                    }
-                });
-            };
+shuffled.forEach((word,index)=>{
 
-            recognition.onend = () => {
-                mascot.classList.remove('speaking');
-            };
-        }
+const btn=document.createElement("button")
 
-        // 초기 실행
-        initLevel();
-    </script>
+btn.className="word-btn"
+btn.textContent=word
+btn.dataset.word=word
 
-    <style>
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-    </style>
+wordBank.appendChild(btn)
+
+})
+
+}
+
+/* 단어 선택 */
+
+function selectWord(btn){
+
+if(btn.classList.contains("selected")) return
+
+btn.classList.add("selected")
+
+const answerBtn=document.createElement("button")
+
+answerBtn.className="word-btn"
+answerBtn.textContent=btn.textContent
+
+answerArea.appendChild(answerBtn)
+
+checkComplete()
+
+}
+
+/* 완료 체크 */
+
+function checkComplete(){
+
+const count=answerArea.querySelectorAll(".word-btn").length
+
+if(count===totalWords){
+
+setTimeout(nextSentence,800)
+
+}
+
+}
+
+/* 다음 문장 */
+
+function nextSentence(){
+
+currentSentence++
+
+if(currentSentence>=sentences.length){
+
+currentSentence=0
+
+}
+
+loadSentence()
+
+}
+
+/* 음성 인식 */
+
+const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
+
+if(SpeechRecognition){
+
+const recognition=new SpeechRecognition()
+
+recognition.lang="ko-KR"
+recognition.continuous=true
+recognition.interimResults=false
+
+controlBtn.addEventListener("click",()=>{
+
+recognition.start()
+
+controlBtn.textContent="듣고 있어요..."
+
+})
+
+recognition.onresult=(event)=>{
+
+const transcript=event.results[event.results.length-1][0].transcript
+
+const recognized=transcript.split(" ")
+
+recognized.forEach(word=>{
+
+const clean=word.replace(/[.,!?;]/g,'').trim()
+
+const btn=[...wordBank.querySelectorAll(".word-btn:not(.selected)")]
+.find(b=>b.textContent===clean)
+
+if(btn){
+
+selectWord(btn)
+
+}
+
+})
+
+}
+
+}
+
+/* 초기 문장 */
+
+loadSentence()
+
+</script>
+
 </body>
 </html>
