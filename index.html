@@ -84,14 +84,39 @@ body {
 
 .mascot {
     width: 160px;
-    margin-right: 8px; 
 }
 
 .speech-bubble {
+    position: relative;
+    margin-left: 15px;
     display: flex;
     border: 2px solid #eee;
     border-radius: 12px;
     padding: 5px;
+}
+
+.speech-bubble:after, .speech-bubble:before {
+	right: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: "";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.speech-bubble:after {
+	border-color: rgba(255, 255, 255, 0);
+	border-right-color: #ffffff;
+	border-width: 10px;
+	margin-top: -10px;
+}
+.speech-bubble:before {
+	border-color: rgba(238, 238, 238, 0);
+	border-right-color: #eee;
+	border-width: 12px;
+	margin-top: -12px;
 }
 
 .sound-btn {
@@ -327,7 +352,7 @@ const sentences=[
 "작은 습관이 운명을 만든다",
 "집중은 힘을 만든다",
 "꾸준함은 천재를 이긴다",
-"오늘도 계속 나아가라",
+"오늘도 계속 나아간다",
 "몸이 움직이면 생각도 움직인다",
 "운동은 최고의 약이다",
 "몸과 마음은 연결되어 있다",
