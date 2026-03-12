@@ -177,8 +177,13 @@ body {
     background-color: #f7f7f7;
 }
 
+/* Placeholder for selected words */
 .word-btn.selected {
-    visibility: hidden; 
+    background-color: #eee;
+    border-color: #eee;
+    color: transparent;
+    box-shadow: none;
+    cursor: default;
 }
 
 /* Footer (Confirm Button Area) */
@@ -367,23 +372,30 @@ const words = sentence.split(' ');
 const wordBank = document.getElementById('word-bank');
 const answerArea = document.getElementById('answer-area');
 
-// In this version, the confirm button is replaced by the control button,
-// so we don't need the logic for it.
-
 function selectWord(wordBtn) {
-    wordBtn.classList.add('selected'); 
+    // A word can only be selected once
+    if (wordBtn.classList.contains('selected')) {
+        return;
+    }
 
-    const answerBtn = wordBtn.cloneNode(true);
-    answerBtn.classList.remove('selected');
+    wordBtn.classList.add('selected');
+
+    const answerBtn = document.createElement('button');
+    answerBtn.className = 'word-btn';
+    answerBtn.textContent = wordBtn.textContent;
+    // Store the ID of the original button to link them
+    answerBtn.dataset.originalId = wordBtn.dataset.id;
+    
     if (answerArea) {
         answerArea.appendChild(answerBtn);
     }
-    
+
+    // Add event listener to the new button in the answer area to allow deselecting
     answerBtn.addEventListener('click', () => deselectWord(answerBtn));
 }
 
 function deselectWord(answerBtn) {
-    const originalWordBtn = wordBank ? wordBank.querySelector(`[data-id="${answerBtn.dataset.id}"]`) : null;
+    const originalWordBtn = wordBank ? wordBank.querySelector(`[data-id="${answerBtn.dataset.originalId}"]`) : null;
     if (originalWordBtn) {
         originalWordBtn.classList.remove('selected');
     }
@@ -393,13 +405,17 @@ function deselectWord(answerBtn) {
 }
 
 if (wordBank) {
-    words.forEach((word, index) => {
+    // Create a shuffled list of words for the word bank
+    const shuffledWords = [...words].sort(() => Math.random() - 0.5);
+
+    shuffledWords.forEach((word, index) => {
         const btn = document.createElement('button');
         btn.className = 'word-btn';
         btn.textContent = word;
-        btn.dataset.id = index;
+        // Assign a unique ID to each button
+        btn.dataset.id = `word-${index}`;
         wordBank.appendChild(btn);
-        
+
         btn.addEventListener('click', () => selectWord(btn));
     });
 }
