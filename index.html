@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -276,6 +277,8 @@ let width=0
 const duration=60*1000
 const intervalTime=100
 
+let recognition = null;
+
 function startTimer(){
 isRunning=true
 controlBtn.textContent='일시정지'
@@ -298,8 +301,21 @@ progressBar.style.width=width+'%'
 
 function pauseTimer(){
 isRunning=false
-controlBtn.textContent='시작'
 clearInterval(progressInterval)
+if(recognition) recognition.stop();
+
+if (width >= 100) {
+controlBtn.textContent = '다시 시작';
+} else {
+controlBtn.textContent='시작';
+}
+}
+
+function resetGame() {
+width = 0;
+progressBar.style.width = '0%';
+currentSentence = 0;
+loadSentence();
 }
 
 function loadSentence(){
@@ -376,22 +392,23 @@ const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition
 
 if(SpeechRecognition){
 
-const recognition=new SpeechRecognition()
+recognition=new SpeechRecognition()
 
 recognition.lang='ko-KR'
 recognition.continuous=true
 recognition.interimResults=false
 
 controlBtn.addEventListener('click',()=>{
-
-if(!isRunning){
-startTimer()
-recognition.start()
-}else{
-pauseTimer()
-recognition.stop()
+if (controlBtn.textContent === '다시 시작') {
+resetGame();
+startTimer();
+recognition.start();
+} else if (!isRunning) {
+startTimer();
+recognition.start();
+} else {
+pauseTimer();
 }
-
 })
 
 recognition.onresult=(event)=>{
